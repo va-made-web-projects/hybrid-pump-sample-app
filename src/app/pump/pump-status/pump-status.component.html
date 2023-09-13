@@ -1,0 +1,21 @@
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-subtitle>Pump Status</ion-card-subtitle>
+    <ion-card-title>
+      <ng-container [ngSwitch]="pumpStatus" >
+        <ion-card-title *ngSwitchCase="'hybrid'" class="ion-text-center">
+          <ion-badge class="badge" color="success">Hybrid</ion-badge>
+        </ion-card-title>
+        <ion-card-title *ngSwitchCase="'mechanical'" class="ion-text-center">
+           <ion-badge class="badge" color="success">Silent</ion-badge>
+          </ion-card-title>
+          <ion-card-title *ngSwitchCase="'diagnostic'" class="ion-text-center">
+            <ion-badge class="badge" color="success">Diagnostic</ion-badge>
+         </ion-card-title>
+      </ng-container>
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+  </ion-card-content>
+</ion-card>

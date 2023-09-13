@@ -1,0 +1,27 @@
+<ion-list>
+  <ion-item-group>
+    <ion-item-divider color="primary">
+      <ion-label>Main App Settings</ion-label>
+    </ion-item-divider>
+    <!-- toggle settings for app -->
+    <ion-item>
+      <ion-toggle aria-label="Notifications" [(ngModel)]="darkMode" (ionChange)="toggleDarkMode()">Dark Mode</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle aria-label="Notifications" [(ngModel)]="notifications" (ionChange)="toggleNotifications()">Notifications</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle aria-label="Sound Effects" [(ngModel)]="soundEffects" (ionChange)="toggleSoundEffects()">Sound Effects</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label></ion-label>
+      <ion-toggle aria-label="Auto-Connect" [(ngModel)]="autoConnect" (ionChange)="toggleAutoConnect()">Auto-Connect</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle aria-label="Auto-Start" [(ngModel)]="autoStart" (ionChange)="toggleAutoStart()">Auto-Start</ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-toggle aria-label="Auto-Stop" [(ngModel)]="autoStop" (ionChange)="toggleAutoStop()">Auto-Stop</ion-toggle>
+    </ion-item>
+  </ion-item-group>
+</ion-list>

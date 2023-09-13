@@ -1,0 +1,22 @@
+<p>Pump Status</p>
+<ion-list>
+  <ion-item>
+    <ion-toggle aria-label="pump" justify="space-between" [value]="isElectrical">Electric Pump</ion-toggle>
+  </ion-item>
+  <ion-item>
+    <ion-toggle aria-label="silent" justify="space-between">Silent Mode</ion-toggle>
+  </ion-item>
+  <ion-item-group>
+    <ion-item-divider color="primary">
+      <ion-label>Thresholds</ion-label>
+    </ion-item-divider>
+    <ion-item class="thresh-badge">
+        <p class="ion-padding-horizontal">Lower:</p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{thresholds.lower}}</ion-badge>
+        <p class="ion-padding-horizontal">Upper: </p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{thresholds.upper}}</ion-badge>
+    </ion-item>
+    <ion-item>
+        <ion-range (ionChange)="rangeChange($event)" min="0" max="100" pin="true"
+        snaps="true" step="1" aria-label="Dual Knobs Range" [dualKnobs]="true" [value]="thresholds"></ion-range>
+    </ion-item>
+  </ion-item-group>
+</ion-list>
