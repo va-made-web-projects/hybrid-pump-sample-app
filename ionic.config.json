@@ -1,0 +1,7 @@
+{
+  "name": "Hybrid Pump Companion",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
