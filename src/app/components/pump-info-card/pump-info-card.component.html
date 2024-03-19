@@ -1,0 +1,38 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-subtitle>Device</ion-card-subtitle>
+    <ion-card-title>Hybrid Pump #1234
+      <span *ngIf="connected">
+        <ion-badge color="success" slot="end">Connected</ion-badge>
+      </span>
+      <span *ngIf="!connected">
+        <ion-badge color="danger" slot="end">Not Connected</ion-badge>
+      </span>
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-list>
+      <ion-label>Battery Level</ion-label>
+      <ion-item>
+        <ion-progress-bar value="0.75" color="success"></ion-progress-bar>
+      </ion-item>
+
+      <ion-label>Thresholds</ion-label>
+      <ion-item>
+        <ion-label class="">Lower:</ion-label><ion-badge class="" color="primary" mode="ios">{{lower}}</ion-badge>
+      </ion-item>
+      <ion-item>
+        <ion-label class="">Upper: </ion-label><ion-badge class="" color="primary" mode="ios">{{upper}}</ion-badge>
+      </ion-item>
+      <ion-label>Current Reading</ion-label>
+      <ion-item>
+        <ion-label>Vacuum</ion-label>
+        <ion-badge color="primary" mode="ios">13</ion-badge>
+      </ion-item>
+      <ion-item>
+        <ion-label>Use</ion-label>
+        <ion-badge color="primary" mode="ios">5:15</ion-badge>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

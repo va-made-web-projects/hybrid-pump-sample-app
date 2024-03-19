@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: 'pump',
-    loadChildren: () => import('./pump/pump.module').then( m => m.PumpPageModule)
+    loadChildren: () => import('./pages/pump/pump.module').then( m => m.PumpPageModule)
   },
   {
     path: 'controls',
@@ -16,7 +16,7 @@ const routes: Routes = [
   },
   {
     path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
+    loadChildren: () => import('./pages/settings/settings.module').then( m => m.SettingsPageModule)
   }
 ];
 @NgModule({

@@ -8,6 +8,7 @@ import { ControlsPageRoutingModule } from './controls-routing.module';
 
 import { ControlsPage } from './controls.page';
 import { PumpControlsComponent } from './pump-controls/pump-controls.component';
+import { DeviceSettingsService } from './device-settings.service';
 
 @NgModule({
   imports: [
@@ -16,6 +17,6 @@ import { PumpControlsComponent } from './pump-controls/pump-controls.component';
     IonicModule,
     ControlsPageRoutingModule
   ],
-  declarations: [ControlsPage, PumpControlsComponent]
+  declarations: [ControlsPage, PumpControlsComponent],
 })
 export class ControlsPageModule {}

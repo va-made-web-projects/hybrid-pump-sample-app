@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Hybrid Pump</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Pump Page</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ng-container>
+   <app-pump-status pumpStatus={{type()}}></app-pump-status>
+  </ng-container>
+
+  <app-raw-sensor-read></app-raw-sensor-read>
+
+  <app-pump-info-card upper={{upper()}} lower={{lower()}}></app-pump-info-card>
+
+</ion-content>
+
+
