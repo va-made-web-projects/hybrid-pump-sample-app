@@ -14,9 +14,17 @@
    <app-pump-status pumpStatus={{type()}}></app-pump-status>
   </ng-container>
 
-  <app-raw-sensor-read></app-raw-sensor-read>
+  <div *ngIf="connected">
+    <app-raw-sensor-read></app-raw-sensor-read>
+  </div>
 
-  <app-pump-info-card upper={{upper()}} lower={{lower()}}></app-pump-info-card>
+  <div>
+    <app-bluetooth-button></app-bluetooth-button>
+  </div>
+
+  <div *ngIf="connected">
+    <app-pump-info-card upper={{upper()}} lower={{lower()}}></app-pump-info-card>
+  </div>
 
 </ion-content>
 

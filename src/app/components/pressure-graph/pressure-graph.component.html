@@ -1,3 +1,6 @@
-<p>
-  pressure-graph works!
-</p>
+<div class="chart-wrapper chart">
+  <canvas baseChart
+  [data]="lineChartData"
+  [options]="options"
+  [type]="'line'"></canvas>
+</div>

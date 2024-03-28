@@ -7,8 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { ControlsPageRoutingModule } from './controls-routing.module';
 
 import { ControlsPage } from './controls.page';
-import { PumpControlsComponent } from './pump-controls/pump-controls.component';
-import { DeviceSettingsService } from './device-settings.service';
+import { PumpControlsComponent } from '../../components/pump-controls/pump-controls.component';
+import { DeviceSettingsService } from '../../services/device-settings.service';
 
 @NgModule({
   imports: [

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DeviceSettingsService } from '../controls/device-settings.service';
+import { DeviceSettingsService } from '../services/device-settings.service';
 
 @Component({
   selector: 'app-tabs',

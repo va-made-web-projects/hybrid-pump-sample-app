@@ -12,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'controls',
-    loadChildren: () => import('./controls/controls.module').then( m => m.ControlsPageModule)
+    loadChildren: () => import('./pages/controls/controls.module').then( m => m.ControlsPageModule)
   },
   {
     path: 'settings',

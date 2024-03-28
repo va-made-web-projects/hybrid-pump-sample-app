@@ -133,6 +133,7 @@ export class PresureDataService implements OnDestroy{
 
       // start notify control command
       await this.bluetoothService.onNotifyData(this.deviceId);
+      await this.bluetoothService.onNotifyBatteryData(this.deviceId);
 
       // this.intervalId = setInterval(async () => {
       //   count++;

@@ -4,7 +4,8 @@
     <ion-card-title>{{pressureData}}</ion-card-title>
   </ion-card-header>
   <ion-card-content>
-    <ion-button (click)="webScan()">New Bluetooth</ion-button>
-    GRAPH
+    <div>
+      <app-pressure-graph></app-pressure-graph>
+    </div>
   </ion-card-content>
 </ion-card>

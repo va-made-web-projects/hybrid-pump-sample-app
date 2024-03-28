@@ -1,4 +1,4 @@
-import { DeviceSettingsService, DeviceState } from './../device-settings.service';
+import { DeviceSettingsService, DeviceState } from '../../services/device-settings.service';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 @Component({
@@ -11,7 +11,6 @@ export class PumpControlsComponent  implements OnInit {
   isElectrical = true;
   isSilent = false;
 
-
   readonly device = this.deviceSettingsService.state.asReadonly();
 
   upper = this.deviceSettingsService.select('upperThresh');
@@ -22,6 +21,10 @@ export class PumpControlsComponent  implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  onSaveButtonClick() {
+    console.log("save button clicked");
   }
 
 
