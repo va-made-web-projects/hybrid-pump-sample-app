@@ -11,6 +11,18 @@
     </ion-toolbar>
   </ion-header>
 
-  <app-pump-controls></app-pump-controls>
+  <div *ngIf="connected">
+    <app-pump-controls></app-pump-controls>
+
+    <div class="ion-text-center">
+      <ion-button (click)="onSaveButtonClick()">Save
+      </ion-button>
+    </div>
+  </div>
+  <div *ngIf="!connected">
+    <ion-item>
+      <ion-label>No device connected</ion-label>
+    </ion-item>
+  </div>
 
 </ion-content>

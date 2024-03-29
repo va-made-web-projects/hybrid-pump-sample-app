@@ -4,6 +4,7 @@ export const BLUETOOTH_UUID = {
   motorCharUUID: '0000fe40-cc7a-482a-984a-7f2ed5b3e58f',
   lowThreshCharUUID: '0000fe41-cc7a-482a-984a-7f2ed5b3e58f',
   highThreshCharUUID: '0000fe42-cc7a-482a-984a-7f2ed5b3e58f',
+  pumpStateCharUUID: '0000fe43-cc7a-482a-984a-7f2ed5b3e58f',
 
   deviceServiceUUID: '0000bc00-cc7a-482a-984a-7f2ed5b3e58f',
   deviceMacCharUUID:'0000bc39-cc7a-482a-984a-7f2ed5b3e58f',

@@ -8,7 +8,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 })
 export class PumpControlsComponent  implements OnInit {
 
-  isElectrical = true;
+  isElectricSignal = this.deviceSettingsService.select('isElectric');
+  isSilentSignal = this.deviceSettingsService.select('isSilent');
+
+  isElectric = true;
   isSilent = false;
 
   readonly device = this.deviceSettingsService.state.asReadonly();
@@ -20,13 +23,11 @@ export class PumpControlsComponent  implements OnInit {
   constructor(private deviceSettingsService: DeviceSettingsService) { }
 
   ngOnInit() {
+    this.isElectric = this.isElectricSignal();
+    this.isSilent = this.isSilentSignal();
+
 
   }
-
-  onSaveButtonClick() {
-    console.log("save button clicked");
-  }
-
 
   rangeChange(event: any) {
     this.deviceSettingsService.set("lowerThresh", event.detail.value.lower);
@@ -36,12 +37,17 @@ export class PumpControlsComponent  implements OnInit {
   }
 
   toggleElectrical(event: any) {
-    this.isElectrical = event.detail.checked;
+    this.isElectric = event.detail.checked;
     this.isSilent = !event.detail.checked;
-    if (this.isElectrical) {
+    if (this.isElectric) {
       this.deviceSettingsService.set("type", 'hybrid');
+      this.deviceSettingsService.set("isElectric", true);
+      this.deviceSettingsService.set("isSilent", false);
+
     } else {
-      this.deviceSettingsService.set("type", 'mechanical');
+      this.deviceSettingsService.set("type", 'silent');
+      this.deviceSettingsService.set("isElectric", false);
+      this.deviceSettingsService.set("isSilent", true);
     }
 
   }
@@ -49,12 +55,16 @@ export class PumpControlsComponent  implements OnInit {
   toggleSilent(event: any) {
     console.log(event);
     this.isSilent = event.detail.checked;
-    this.isElectrical = !event.detail.checked;
+    this.isElectric = !event.detail.checked;
     if (this.isSilent) {
-      this.deviceSettingsService.set("type", 'mechanical');
+      this.deviceSettingsService.set("type", 'silent');
+      this.deviceSettingsService.set("isElectric", false);
+      this.deviceSettingsService.set("isSilent", true);
     }
     else {
       this.deviceSettingsService.set("type", 'hybrid');
+      this.deviceSettingsService.set("isElectric", true);
+      this.deviceSettingsService.set("isSilent", false);
     }
 
   }

@@ -32,6 +32,7 @@ export class BluetoothService {
   private _notifyData = new Subject<number>();
   batteryLevelSignal = signal(0);
   deviceIDSignal = signal<string>("");
+  pumpStateSignal = signal(0);
 
 
   constructor(
@@ -283,6 +284,9 @@ export class BluetoothService {
     const numberArray = mapNumbers[0];
     return numberArray;
   }
+  parseInt8DataReading(mapData: DataView) {
+    return mapData.getInt8(0); // true for little-endian byte order
+  }
 
   async onReadMatData(deviceId: string) {
     try {
@@ -379,7 +383,39 @@ export class BluetoothService {
     }
   }
 
-  async onWriteData(uuid: string, data: DataView) {
+  async onReadPumpState() {
+    this.pumpStateSignal.set(1)
+    try {
+      const readData = await BleClient.read(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.pressureServiceUUID,
+        BLUETOOTH_UUID.pumpStateCharUUID
+      );
+
+      if (readData.byteLength > 0) {
+        const parsedReading = this.parseInt8DataReading(readData);
+        return parsedReading;
+      } else {
+        console.log('No data received from Bluetooth device.');
+        return null;
+      }
+    } catch (error) {
+      console.log('Read BT data error:', error);
+      // Assert that the error is of type 'Error'
+      if ((error as Error).message && (error as Error).message.includes('Not connected')) {
+        if (!this.isReconnecting) {
+          this.isReconnecting = true;
+          this._connection.next(false);
+          this.onConnectDevice(this.deviceIDSignal());
+        }
+      }
+      // If there's an error, return null
+      return null;
+    }
+
+  }
+
+  async onWriteDataWithoutResponse(uuid: string, data: DataView) {
     try {
       await BleClient.writeWithoutResponse(
         this.deviceIDSignal(),
