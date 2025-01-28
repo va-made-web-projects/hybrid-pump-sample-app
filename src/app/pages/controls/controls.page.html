@@ -11,18 +11,21 @@
     </ion-toolbar>
   </ion-header>
 
-  <div *ngIf="connected">
+  <!-- <div *ngIf="connected"> -->
+  <div>
     <app-pump-controls></app-pump-controls>
+
+    <app-bluetooth-time></app-bluetooth-time>
 
     <div class="ion-text-center">
       <ion-button (click)="onSaveButtonClick()">Save
       </ion-button>
     </div>
   </div>
-  <div *ngIf="!connected">
+  <!-- <div *ngIf="!connected">
     <ion-item>
       <ion-label>No device connected</ion-label>
     </ion-item>
-  </div>
+  </div> -->
 
 </ion-content>

@@ -18,8 +18,12 @@
         <p class="ion-padding-horizontal">Upper: </p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{thresholds.lower}}</ion-badge>
     </ion-item>
     <ion-item>
-        <ion-range (ionChange)="rangeChange($event)" min="0" max="3000" pin="true"
+        <ion-range (ionChange)="rangeChange($event)" min="0" max="30" pin="true"
         snaps="true" step="1" aria-label="Dual Knobs Range" [dualKnobs]="true" [value]="thresholds"></ion-range>
     </ion-item>
   </ion-item-group>
+  <hr>
+  <ion-item>
+    <ion-toggle aria-label="silent" justify="space-between" [checked]="isDebug" (ionChange)="toggleDebug($event)">Debug Mode</ion-toggle>
+  </ion-item>
 </ion-list>

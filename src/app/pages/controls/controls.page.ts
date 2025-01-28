@@ -3,6 +3,7 @@ import { numbersToDataView } from '@capacitor-community/bluetooth-le';
 import { Subscription } from 'rxjs';
 import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
 import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { ConversionsService } from 'src/app/services/conversions.service';
 import { DeviceSettingsService } from 'src/app/services/device-settings.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class ControlsPage implements OnInit, OnDestroy {
   thresholds = { lower: this.upper(), upper: this.lower() };
   connectionSub: Subscription = new Subscription;
   connected: boolean = true;
+  debug: boolean = false;
 
   constructor(
     private deviceSettingsService: DeviceSettingsService,
@@ -28,6 +30,7 @@ export class ControlsPage implements OnInit, OnDestroy {
         this.connected = data
       }
     );
+    this.debug = this.bluetoothService.debug();
   }
 
   ngOnDestroy(): void {
@@ -58,12 +61,12 @@ export class ControlsPage implements OnInit, OnDestroy {
 
   onSaveButtonClick() {
     console.log("save button clicked");
-    const lowDataView = this.setDataView(this.deviceSettingsService.select('lowerThresh')());
-    const highDataView = this.setDataView(this.deviceSettingsService.select('upperThresh')());
+    const lowDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('lowerThresh')()));
+    const highDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('upperThresh')()));
     const type = this.deviceSettingsService.select('type')();
 
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.lowThreshCharUUID, lowDataView)
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.highThreshCharUUID, highDataView)
+    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.lowThreshCharUUID, lowDataView, BLUETOOTH_UUID.pressureServiceUUID)
+    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.highThreshCharUUID, highDataView, BLUETOOTH_UUID.pressureServiceUUID)
 
     let pumpState = 0;
     if (type == 'silent') {
@@ -73,7 +76,7 @@ export class ControlsPage implements OnInit, OnDestroy {
     } else if (type == 'diagnostic') {
       pumpState = 2;
     }
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.pumpStateCharUUID, this.setPumpStateDataView(pumpState))
+    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.pumpStateCharUUID, this.setPumpStateDataView(pumpState), BLUETOOTH_UUID.pressureServiceUUID)
 
   }
 

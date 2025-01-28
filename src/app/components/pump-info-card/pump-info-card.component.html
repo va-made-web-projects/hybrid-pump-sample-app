@@ -1,10 +1,10 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-subtitle>Device</ion-card-subtitle>
-    <ion-card-title>Hybrid Pump #1234
+    <ion-card-subtitle>{{id()}}</ion-card-subtitle>
+    <ion-card-title>Hybrid Pump
       <span>
-        <ion-badge [color]="connected ? 'success' : 'danger'" slot="end">
-          {{ connected ? 'Connected' : 'Not Connected' }}
+        <ion-badge [color]="connection() ? 'success' : 'danger'" slot="end">
+          {{ connection() ? 'Connected' : 'Not Connected' }}
         </ion-badge>
       </span>
 
@@ -27,11 +27,11 @@
       <ion-label>Current Reading</ion-label>
       <ion-item>
         <ion-label>Vacuum</ion-label>
-        <ion-badge color="primary" mode="ios">13</ion-badge>
+        <ion-badge color="primary" mode="ios">{{currentPressure()}}</ion-badge>
       </ion-item>
       <ion-item>
         <ion-label>Use</ion-label>
-        <ion-badge color="primary" mode="ios">5:15</ion-badge>
+        <ion-badge color="primary" mode="ios">{{currentMotorRuntime | millisecondsToTime }}</ion-badge>
       </ion-item>
     </ion-list>
   </ion-card-content>

@@ -6,23 +6,40 @@
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
+
     <ion-toolbar>
       <ion-title size="large">Pump Page</ion-title>
     </ion-toolbar>
   </ion-header>
+  <div *ngIf="errorState > 0" class="ion-text-center">
+    <app-errorstate></app-errorstate>
+  </div>
   <ng-container>
-   <app-pump-status pumpStatus={{type()}}></app-pump-status>
+    <app-pump-status pumpStatus={{type()}}>
+    </app-pump-status>
   </ng-container>
 
-  <div *ngIf="connected">
+<ion-card *ngIf="isConnecting()">
+    <ion-card-content class="ion-text-center">
+      <ion-spinner  name="bubbles">
+      </ion-spinner>
+      <div class="ion-text-center ion-padding">
+        <ion-label>Connecting...</ion-label>
+
+      </div>
+    </ion-card-content>
+
+  </ion-card>
+
+  <div *ngIf="connected || debug()">
     <app-raw-sensor-read></app-raw-sensor-read>
   </div>
 
-  <div>
+  <div *ngIf="!connected || debug()">
     <app-bluetooth-button></app-bluetooth-button>
   </div>
 
-  <div *ngIf="connected">
+  <div *ngIf="connected || debug()">
     <app-pump-info-card upper={{upper()}} lower={{lower()}}></app-pump-info-card>
   </div>
 

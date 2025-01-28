@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { PressureDataService } from './pressure-data.service';
+import { ConversionsService } from './conversions.service';
 
-describe('PressureDataService', () => {
-  let service: PressureDataService;
+describe('ConversionsService', () => {
+  let service: ConversionsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(PressureDataService);
+    service = TestBed.inject(ConversionsService);
   });
 
   it('should be created', () => {

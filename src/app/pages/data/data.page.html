@@ -1,0 +1,38 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>data</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">data</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div class="ion-text-center">
+    <ion-button (click)="download()" >Download</ion-button>
+  </div>
+
+  <div>
+    <app-page-data-reader></app-page-data-reader>
+  </div>
+
+  <!-- print data for count -->
+  <!-- <ion-accordion-group>
+    <ion-accordion *ngFor="let data of groupedData | keyvalue">
+      <ion-item slot="header">
+        <ion-label>
+          {{data.key}}
+        </ion-label>
+      </ion-item>
+
+      <div slot="content" *ngFor="let point of data.value">
+        <app-data-point
+          [timestamp]="point.date"
+          [sensorValue]="point.value"
+        ></app-data-point>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+</ion-content> -->

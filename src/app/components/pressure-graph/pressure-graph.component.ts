@@ -1,10 +1,14 @@
-import { OnDestroy, ViewChild } from '@angular/core';
+import { DeviceSettingsService } from 'src/app/services/device-settings.service';
+import { ConversionsService } from 'src/app/services/conversions.service';
+import { Input, OnDestroy, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { Chart, registerables } from 'chart.js';
+import { Chart, ChartOptions, registerables, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
 import { Subscription } from 'rxjs';
 import { BluetoothService } from 'src/app/services/bluetooth.service';
+import  ChartAnnotation from 'chartjs-plugin-annotation';
+
 
 @Component({
   selector: 'app-pressure-graph',
@@ -14,8 +18,10 @@ import { BluetoothService } from 'src/app/services/bluetooth.service';
 export class PressureGraphComponent  implements OnInit, OnDestroy {
 
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
-  dataSub: Subscription = new Subscription;
   currentPressureReading: number = 0;
+
+  upper = this.deviceSettingsService.select('upperThresh');
+  lower = this.deviceSettingsService.select('lowerThresh');
 
   lineChartType: ChartType = 'line';
   lineChartData: ChartConfiguration['data'] = {
@@ -35,18 +41,43 @@ export class PressureGraphComponent  implements OnInit, OnDestroy {
     labels: [],
   };
 
-  options: any;
-  constructor(private bluetoothService: BluetoothService) {
-    Chart.register(...registerables);
+  options: ChartOptions = {
+
+  };
+  plugins: any = [
+
+  ]
+  constructor(private bluetoothService: BluetoothService, private deviceSettingsService: DeviceSettingsService) {
+    Chart.register(...registerables, ChartAnnotation);
+
   }
   ngOnDestroy(): void {
-    if (this.dataSub) {
-      this.dataSub.unsubscribe();
-    }
   }
 
   ngOnInit() {
     this.options= {
+      plugins: {
+        annotation: {
+          annotations: {
+            line1: {
+              type: 'line',
+              yMin: this.lower,
+              yMax: this.lower,
+              borderColor: 'rgb(255, 99, 132)',
+              borderWidth: 2,
+              borderDash: [5, 5],
+            },
+            line2: {
+              type: 'line',
+              yMin: this.upper,
+              yMax: this.upper,
+              borderColor: 'rgb(132, 255, 99)',
+              borderWidth: 2,
+              borderDash: [5, 5],
+            }
+          }
+        }
+    },
       elements: {
         line: {
           tension: 0.5,
@@ -56,17 +87,9 @@ export class PressureGraphComponent  implements OnInit, OnDestroy {
         // We use this empty structure as a placeholder for dynamic theming.
         y: {
           position: 'left',
-          color: 'red',
         },
       },
-
     };
-
-    this.dataSub = this.bluetoothService.notifyData.subscribe(
-      data => {
-        this.currentPressureReading = data
-      }
-    )
 
     let count = 0;
     setInterval(() => {
@@ -80,14 +103,14 @@ export class PressureGraphComponent  implements OnInit, OnDestroy {
           this.lineChartData.datasets[0].data.shift();
           this.lineChartData.labels?.shift();
         }
-        this.lineChartData.datasets[0].data.push(this.currentPressureReading);
+        this.lineChartData.datasets[0].data.push(this.bluetoothService.currentPressureSignal());
         this.lineChartData.labels?.push(count);
         count++
-        if (this.chart && this.chart.chart && this.chart.chart.update) {
+        if (this.chart && this.chart.chart) {
           this.chart.chart.update();
         }
       }
-    }, 1000); // 1000 milliseconds = 1
+    }, 1000); // 1000 milliseconds = 1 second
   }
 
 }

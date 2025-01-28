@@ -1,0 +1,28 @@
+<ion-card [class.highlight]="!isTimeSynced">
+  <ion-card-content>
+    <ion-item-divider color="primary">
+      <ion-label>Device Time</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>Current Time</ion-label>
+      <ion-badge color="primary" mode="ios">{{ currentTime | date:'mediumTime' }}</ion-badge>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Hybrid Pump Time</ion-label>
+      <ion-badge [color]="isTimeSynced ? 'primary' : 'danger'" mode="ios">{{ bluetoothTime | date:'mediumTime' }}</ion-badge>
+    </ion-item>
+
+    <ion-item *ngIf="!isTimeSynced" >
+      <ion-label color="warning" class="ion-text-center">
+        The time is not synced. Please update time with "Set Time to Device".
+      </ion-label>
+    </ion-item>
+    <div>
+      <ion-buttons>
+        <ion-button color="primary" fill="solid" shape="round" (click)="onReadTime($event)">Read Time from Device</ion-button>
+        <ion-button color="success" fill="solid" shape="round" (click)="onWriteTime()">Set Time to Device</ion-button>
+      </ion-buttons>
+    </div>
+  </ion-card-content>
+</ion-card>

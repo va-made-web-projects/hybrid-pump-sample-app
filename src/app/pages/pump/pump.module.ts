@@ -13,6 +13,8 @@ import { RawSensorReadComponent } from '../../components/raw-sensor-read/raw-sen
 import { PressureGraphComponent } from 'src/app/components/pressure-graph/pressure-graph.component';
 import { BaseChartDirective } from 'ng2-charts';
 import { BluetoothButtonComponent } from 'src/app/components/bluetooth-button/bluetooth-button.component';
+import { MillisecondsToTimePipe } from 'src/pipes/milliseconds-to-time.pipe';
+import { ErrorstateComponent } from 'src/app/components/errorstate/errorstate.component';
 
 @NgModule({
   imports: [
@@ -28,7 +30,12 @@ import { BluetoothButtonComponent } from 'src/app/components/bluetooth-button/bl
     PumpStatusComponent,
     RawSensorReadComponent,
     PressureGraphComponent,
-    BluetoothButtonComponent
+    BluetoothButtonComponent,
+    MillisecondsToTimePipe,
+    ErrorstateComponent
   ],
+  providers: [MillisecondsToTimePipe],
+  exports: [MillisecondsToTimePipe]
+
 })
 export class PumpPageModule {}

@@ -6,10 +6,17 @@ import { map} from 'rxjs/operators';
 import { Preferences } from '@capacitor/preferences';
 import { BLUETOOTH_UUID } from './../constants/bluetooth-uuid';
 import { ScanResult } from './../../../node_modules/@capacitor-community/bluetooth-le/dist/esm/definitions.d';
+import { ConversionsService } from './conversions.service';
+import { AlertService } from './alert.service';
 
 
 interface BluetoothDevice {
   deviceId: string;
+}
+
+interface PageData {
+  pageNumber: number;
+  data: number[];
 }
 
 @Injectable({
@@ -33,10 +40,17 @@ export class BluetoothService {
   batteryLevelSignal = signal(0);
   deviceIDSignal = signal<string>("");
   pumpStateSignal = signal(0);
+  connectionStatus = signal(false);
+  debug = signal(false);
+  currentPressureSignal = signal(0);
+  alertTypeSignal = signal(0);
+  errorStateSignal= signal(0);
+  currentTimeSignal = signal(0);
+  isConnecting = signal(true);
 
 
   constructor(
-    private ngZone: NgZone,
+    private ngZone: NgZone, private alertService: AlertService
   ) {
     if (Capacitor.getPlatform() !== 'web') {
       this.initialize();
@@ -75,6 +89,7 @@ export class BluetoothService {
    * @description: initialize the bluetooth connection
    */
   initialize() {
+    this.isConnecting.set(true)
     try {
       BleClient.initialize().then(
         (success: any) => {
@@ -84,6 +99,7 @@ export class BluetoothService {
           this._bleEnabled.next(false);
         }
       );
+      this.initializeBluetooth();
     } catch (error) {
       console.log('BLE INITIALIZE ERROR:', error);
     }
@@ -107,14 +123,17 @@ export class BluetoothService {
 
   requestDevice() {
     return BleClient.requestDevice({
-      services: [BLUETOOTH_UUID.pressureServiceUUID, BLUETOOTH_UUID.batteryServiceUUID],
+      services: [BLUETOOTH_UUID.pressureServiceUUID, BLUETOOTH_UUID.batteryServiceUUID, BLUETOOTH_UUID.deviceServiceUUID, BLUETOOTH_UUID.alertServiceUUID, BLUETOOTH_UUID.dataServiceUUID],
+      optionalServices: [BLUETOOTH_UUID.timeServiceUUID],
     }).then((deviceId: any) => {
       console.log('DEVICE ID:', deviceId);
       this.onConnectDevice(deviceId.deviceId);
     }).catch((error: any) => {
       console.log('ERROR requestDevice():', error);
+      this.isConnecting.set(false)
     }).catch((error: any) => {
       console.log('ERROR requestDevice():', error);
+      this.isConnecting.set(false)
     });
   }
 
@@ -173,7 +192,7 @@ export class BluetoothService {
         catch (connError) {
           console.log('ERROR onConnectDevice():', connError);
         }
-      }, 10000); //longer scan will allow great chance of finding bt device.
+      }, 3000); //longer scan will allow great chance of finding bt device.
     }
 
     // call disconnect before connect to take care of any hanging connections on android
@@ -182,11 +201,16 @@ export class BluetoothService {
       try {
         BleClient.disconnect(deviceId).then(
           (disconnectSuccess: any) => {this.tryConnect(deviceId);},
-          (disconnectFailure: any) => {this._connection.next(false);}
+          (disconnectFailure: any) => {
+            this._connection.next(false);
+            this.connectionStatus.set(false)
+          },
         );
       } catch (connError) {
         console.log('BLE CONNECTING ERROR:', connError);
         this._connection.next(false);
+        this.connectionStatus.set(false)
+
       }
     }
   }
@@ -195,6 +219,8 @@ export class BluetoothService {
     //platform independent connection
     BleClient.connect(deviceId, (onDisconnect: any) => {
       this._connection.next(false);
+      this.connectionStatus.set(false)
+
       console.log(
         'DEVICE DISCONNECTED:',
         deviceId,
@@ -203,8 +229,10 @@ export class BluetoothService {
       );
     }).then(
       (success: any) => {
+        console.log("BLE DEVICE CONNECTED: ", deviceId)
         this.isReconnecting = false;
         this._connection.next(true);
+        this.connectionStatus.set(true)
         this.reconnectCount = 0;
         this.lostPressureAlert = false;
       },
@@ -232,7 +260,26 @@ export class BluetoothService {
       characteristic,
       (value: DataView) => {
         data = +this.parseInt16DataReading(value).toString();
-        this._notifyData.next(data);
+        console.log("data", data);
+        let convertedData = ConversionsService.millivoltsToInches(data)
+        this.currentPressureSignal.set(convertedData);
+        this._notifyData.next(convertedData);
+      }
+    );
+  }
+
+  async onAlertData(deviceId:string) {
+    const service = BLUETOOTH_UUID.alertServiceUUID;
+    const characteristic = BLUETOOTH_UUID.alertNotifyCharUUID;
+    let data: number;
+    await BleClient.startNotifications(
+      deviceId,
+      service,
+      characteristic,
+      (value: DataView) => {
+        data = +this.parseInt8DataReading(value).toString();
+        this.alertTypeSignal.set(data);
+        this.alertService.presentAlert();
       }
     );
   }
@@ -262,6 +309,43 @@ export class BluetoothService {
     }
     const numberArray = mapNumbers;
     return numberArray;
+  }
+
+  parseDataReading(data: DataView) {
+    console.log("parseDAtaReading1", data);
+
+    let length = data.byteLength;
+    const data_array = new Uint8Array(length / Uint8Array.BYTES_PER_ELEMENT);
+    for (let i = 0; i < data_array.length; i++) {
+      data_array[i] = data.getUint8(i * Uint8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
+    }
+    console.log("parseDAtaReading2", data_array);
+
+    const chunkSize = 16; // Each data point is 16 bytes
+
+    if (length % chunkSize !== 0) {
+        throw new Error("Data length is not a multiple of 16 bytes.");
+    }
+
+    const parsedData = [];
+
+    for (let offset = 0; offset < length; offset += chunkSize) {
+        // Read timestamp (first 8 bytes, little-endian)
+        const timestamp = data.getBigUint64(offset, true);
+
+        // Read sensor value (next 2 bytes, little-endian)
+        const sensorValue = data.getUint16(offset + 8, true);
+
+        // Skip the 6 bytes of padding (offset + 10 to offset + 16)
+        parsedData.push({
+            timestamp: Number(timestamp), // Converting BigInt to Number for ease of use
+            sensorValue
+        });
+    }
+
+    console.log(parsedData);
+
+    return parsedData;
   }
 
 
@@ -312,6 +396,8 @@ export class BluetoothService {
         if (!this.isReconnecting) {
           this.isReconnecting = true;
           this._connection.next(false);
+          this.connectionStatus.set(false)
+
           this.onConnectDevice(deviceId);
         }
       }
@@ -344,6 +430,8 @@ export class BluetoothService {
         if (!this.isReconnecting) {
           this.isReconnecting = true;
           this._connection.next(false);
+          this.connectionStatus.set(false)
+
           this.onConnectDevice(deviceId);
         }
       }
@@ -375,6 +463,41 @@ export class BluetoothService {
         if (!this.isReconnecting) {
           this.isReconnecting = true;
           this._connection.next(false);
+          this.connectionStatus.set(false)
+
+          this.onConnectDevice(this.deviceIDSignal());
+        }
+      }
+      // If there's an error, return null
+      return null;
+    }
+  }
+
+  async onReadMotorRuntime() {
+    try {
+      const readData = await BleClient.read(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.motorRuntimeCharUUID
+      );
+      console.log('READ RAW MOTOR RUNTIME:', readData);
+      if (readData.byteLength > 0) {
+        const parsedReading = this.parseInt32DataReading(readData);
+        console.log('READ MOTOR RUNTIME:', parsedReading);
+        return parsedReading;
+      } else {
+        console.log('No data received from Bluetooth device.');
+        return null;
+      }
+    } catch (error) {
+      console.log('Read BT data error:', error);
+      // Assert that the error is of type 'Error'
+      if ((error as Error).message && (error as Error).message.includes('Not connected')) {
+        if (!this.isReconnecting) {
+          this.isReconnecting = true;
+          this._connection.next(false);
+          this.connectionStatus.set(false)
+
           this.onConnectDevice(this.deviceIDSignal());
         }
       }
@@ -406,20 +529,54 @@ export class BluetoothService {
         if (!this.isReconnecting) {
           this.isReconnecting = true;
           this._connection.next(false);
+          this.connectionStatus.set(false)
+
           this.onConnectDevice(this.deviceIDSignal());
         }
       }
       // If there's an error, return null
       return null;
     }
-
   }
 
-  async onWriteDataWithoutResponse(uuid: string, data: DataView) {
+  async onReadErrorState() {
+    this.errorStateSignal.set(0)
+    try {
+      const readData = await BleClient.read(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.errorStateCharUUID
+      );
+
+      if (readData.byteLength > 0) {
+        const parsedReading = this.parseInt8DataReading(readData);
+        return parsedReading;
+      } else {
+        console.log('No data received from Bluetooth device.');
+        return null;
+      }
+    } catch (error) {
+      console.log('Read BT data error:', error);
+      // Assert that the error is of type 'Error'
+      if ((error as Error).message && (error as Error).message.includes('Not connected')) {
+        if (!this.isReconnecting) {
+          this.isReconnecting = true;
+          this._connection.next(false);
+          this.connectionStatus.set(false)
+
+          this.onConnectDevice(this.deviceIDSignal());
+        }
+      }
+      // If there's an error, return null
+      return null;
+    }
+  }
+
+  async onWriteDataWithoutResponse(uuid: string, data: DataView, service: string) {
     try {
       await BleClient.writeWithoutResponse(
         this.deviceIDSignal(),
-        BLUETOOTH_UUID.pressureServiceUUID,
+        service,
         uuid,
         data
       );
@@ -440,5 +597,95 @@ export class BluetoothService {
     this.ngZone.run(() => {
       this.statusMessage = message;
     });
+  }
+
+
+  initializeBluetooth() {
+    if (!BleClient) {
+      this.initialize();
+    }
+    this.checkBluetooth().then(
+      (success) => {
+        if (!success) {
+          console.log('Bluetooth is not enabled, turn bluetooth on to continue');
+        }
+      },
+      (error) => {
+        console.log('Bluetooth Error', error);
+      }
+    );
+
+    //---------- Bluetooth connection ----------//
+    if (!this.connectionStatus()) {
+      this.autoConnect()
+        .pipe(
+          map((id) => {
+            if (id) {
+              this.deviceIDSignal.set(id);
+              this.onConnectDevice(id);
+            } else {
+              console.log('no device id, requesting device');
+              this.requestDevice(); //if cannot auto connect request device
+            }
+
+          })
+        )
+        .subscribe()
+      }
+
+      this.connectionData.subscribe(
+
+        (isConnected) => {
+          this.isConnecting.set(false)
+          if (!isConnected) {
+            this.onConnectDevice(this.deviceIDSignal());
+          } else {
+            this.onNotifyData(this.deviceIDSignal());
+            this.onNotifyBatteryData(this.deviceIDSignal());
+            this.onAlertData(this.deviceIDSignal());
+          }
+      });
+  }
+
+  async readTimestamp(): Promise<number> {
+    try {
+      const value = await await BleClient.read(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.timeServiceUUID,
+        BLUETOOTH_UUID.currentTimeCharUUID
+      );
+      // Assuming the timestamp is sent as a 4-byte unsigned integer
+      const timestamp = value.getUint32(0, true); // true for little-endian
+      this.currentTimeSignal.set(timestamp);
+      console.log('READ TIMESTAMP:', timestamp);
+      return timestamp;
+    } catch (error) {
+      console.error('Error reading timestamp:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Write timestamp to device
+   * @param timestamp Unix timestamp to set
+   */
+  // Your writeTimestamp function (as given earlier)
+  async writeTimestamp(timestamp: number): Promise<void> {
+    try {
+      // Create a buffer with the timestamp
+      const buffer = new ArrayBuffer(4);
+      const view = new DataView(buffer);
+      view.setUint32(0, timestamp, true); // Little-endian
+
+      console.log('Writing timestamp:', view);
+
+      // Assuming `this.timeCharacteristic` is initialized and ready for writing
+      await this.onWriteDataWithoutResponse(BLUETOOTH_UUID.currentTimeCharUUID, view, BLUETOOTH_UUID.timeServiceUUID);
+
+      console.log('Timestamp successfully written:', timestamp);
+    } catch (error) {
+      console.error('Error writing timestamp:', error);
+      throw error;
+    }
   }
 }

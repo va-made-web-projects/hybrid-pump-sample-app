@@ -1,0 +1,13 @@
+.custom-progress-bar {
+  --background: #f0f0f0; /* Light gray background */
+  --progress-background: linear-gradient(90deg, #4caf50, #81c784); /* Green gradient */
+  --buffer-background: rgba(0, 0, 0, 0.1); /* Buffer background if applicable */
+  --height: 28px; /* Increase height for better visibility */
+  --border-radius: 8px; /* Rounded corners */
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
+  margin: 20px 0; /* Add spacing around the bar */
+
+  width: 75%;
+  margin-left: 12.5%;
+  margin-right: 12.5%;
+}

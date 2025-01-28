@@ -11,6 +11,7 @@ export interface DeviceState {
   runtime: number;
   sn: string;
   vn: string;
+  error: number;
 }
 
 

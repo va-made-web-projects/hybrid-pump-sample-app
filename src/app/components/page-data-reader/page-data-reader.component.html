@@ -1,0 +1,53 @@
+<div>
+  <h2>Page Data Reader</h2>
+  <ion-button (click)="readPageData()">Read Page Data</ion-button>
+
+  <div *ngIf="currentPage !== null">
+    <h3>Current Page: {{ currentPage }}</h3>
+  </div>
+
+  <div *ngIf="pageDataService.progress() < 1">
+    <ion-progress-bar
+    *ngIf="currentPage !== null"
+    [value]="pageDataService.progress()"
+    class="custom-progress-bar"
+    ></ion-progress-bar>
+  </div>
+
+  <!-- <div>
+    <ion-accordion-group>
+      <ion-accordion *ngFor="let data of groupedData | keyvalue">
+        <ion-item slot="header">
+          <ion-label>
+            {{data.key}}
+          </ion-label>
+        </ion-item>
+
+        <div slot="content" *ngFor="let point of data.value">
+          <app-data-point
+            [timestamp]="point.timestamp.toString()"
+            [sensorValue]="point.sensorValue"
+          ></app-data-point>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div> -->
+
+  <div *ngIf="allPagesData.length > 0">
+    <h3>Pages Data:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Page Number</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let page of allPagesData">
+          <td>{{ page.timestamp }}</td>
+          <td>{{ page.sensorValue }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
