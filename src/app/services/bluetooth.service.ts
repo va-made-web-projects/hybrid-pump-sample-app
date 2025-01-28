@@ -47,6 +47,7 @@ export class BluetoothService {
   errorStateSignal= signal(0);
   currentTimeSignal = signal(0);
   isConnecting = signal(true);
+  totalPagesSignal = signal(0)
 
 
   constructor(
@@ -688,4 +689,24 @@ export class BluetoothService {
       throw error;
     }
   }
+
+  async readTotalPages(): Promise<number> {
+    try {
+      const value = await await BleClient.read(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.totalPagesCharUUID
+      );
+      // Assuming the timestamp is sent as a 4-byte unsigned integer
+      const totalPages = value.getUint32(0, true); // true for little-endian
+      this.totalPagesSignal.set(totalPages);
+      console.log('READ TotalPages:', totalPages);
+      return totalPages;
+    } catch (error) {
+      console.error('Error reading total pages:', error);
+      throw error;
+    }
+  }
+
+
 }

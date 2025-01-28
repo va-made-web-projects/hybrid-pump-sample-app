@@ -1,0 +1,19 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Storage Usage</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <!-- Display storage usage and capacity -->
+    <p>
+      Used: {{ usage / 1024 | number:'1.2-2' }} KB / {{ capacity / 1024 | number:'1.2-2' }} KB
+    </p>
+
+    <!-- Progress bar to show usage percentage -->
+    <ion-progress-bar [value]="usagePercentage / 100"></ion-progress-bar>
+
+    <!-- Display usage percentage -->
+    <p class="ion-text-center">
+      {{ usagePercentage | number:'1.2-2' }}% Used
+    </p>
+  </ion-card-content>
+</ion-card>
