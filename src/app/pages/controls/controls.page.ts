@@ -17,6 +17,7 @@ export class ControlsPage implements OnInit, OnDestroy {
   thresholds = { lower: this.upper(), upper: this.lower() };
   connectionSub: Subscription = new Subscription;
   connected: boolean = true;
+  
   debug: boolean = false;
 
   constructor(
