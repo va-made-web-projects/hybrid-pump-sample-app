@@ -285,6 +285,10 @@ export class BluetoothService {
     );
   }
 
+  mapRange(value: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
+    return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+  }
+
 
   async onNotifyBatteryData(deviceId:string) {
     const service = BLUETOOTH_UUID.batteryServiceUUID;
@@ -295,33 +299,28 @@ export class BluetoothService {
       service,
       characteristic,
       (value: DataView) => {
-        data = +this.parseBatteryReading(value).toString();
-        this.batteryLevelSignal.set(data / 100)
+        data = this.parseBatteryReading(value);
+        // map to 2000 to 3000 to 0 - 1
+        console.log("BATTERY DATA", data);
+        data = this.mapRange(data, 2000, 2500, 0, 1);
+
+
+        this.batteryLevelSignal.set(data)
         // this._notifyData.next(data);
       }
     );
   }
 
   parseBatteryReading(data: DataView) {
-    let length = data.byteLength;
-    const mapNumbers = new Int8Array(length / Int8Array.BYTES_PER_ELEMENT);
-    for (let i = 0; i < mapNumbers.length; i++) {
-      mapNumbers[i] = data.getInt8(i * Int8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
-    }
-    const numberArray = mapNumbers;
-    return numberArray;
+    return data.getInt32(0, true); // true for little-endian byte order
   }
 
   parseDataReading(data: DataView) {
-    console.log("parseDAtaReading1", data);
-
     let length = data.byteLength;
-    const data_array = new Uint8Array(length / Uint8Array.BYTES_PER_ELEMENT);
+    const data_array = new Int8Array(length / Int8Array.BYTES_PER_ELEMENT);
     for (let i = 0; i < data_array.length; i++) {
-      data_array[i] = data.getUint8(i * Uint8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
+      data_array[i] = data.getInt8(i * Int8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
     }
-    console.log("parseDAtaReading2", data_array);
-
     const chunkSize = 16; // Each data point is 16 bytes
 
     if (length % chunkSize !== 0) {

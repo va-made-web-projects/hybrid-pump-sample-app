@@ -5,7 +5,7 @@
   <ion-card-content>
     <!-- Display storage usage and capacity -->
     <p>
-      Used: {{ usage / 1024 | number:'1.2-2' }} KB / {{ capacity / 1024 | number:'1.2-2' }} KB
+      Used: {{ usage | fileSize}} / {{ capacity | fileSize }}
     </p>
 
     <!-- Progress bar to show usage percentage -->

@@ -15,7 +15,6 @@ export class BluetoothTimeComponent implements OnInit {
   bluetoothTime: Date | null = null;
   timeDifference: number = 0;
   isTimeSynced: boolean = true;
-  updateBluetoothTimeInterval: any;
 
   constructor(
     private bluetoothService: BluetoothService,
@@ -42,15 +41,10 @@ export class BluetoothTimeComponent implements OnInit {
   }
 
   updateBluetoothTime() {
-    clearInterval(this.updateBluetoothTimeInterval);
-    this.updateBluetoothTimeInterval = setInterval(() => {
-      if (this.bluetoothTime) {
-        this.bluetoothTime = new Date(this.bluetoothTime.getTime() + 1000);
-        this.checkTimeDifference();
-      }
-
-    }, 1000);
-
+    if (this.bluetoothTime) {
+      this.bluetoothTime = new Date(this.bluetoothTime.getTime() + 1000);
+      this.checkTimeDifference();
+    }
   }
 
   async onReadTime(event: any) {

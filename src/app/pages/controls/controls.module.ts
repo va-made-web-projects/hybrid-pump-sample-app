@@ -12,6 +12,7 @@ import { DeviceSettingsService } from '../../services/device-settings.service';
 import { BluetoothTimeComponent } from 'src/app/components/bluetooth-time/bluetooth-time.component';
 import { TimeNotSyncedPopoverComponent } from 'src/app/components/time-not-synced-popover/time-not-synced-popover.component';
 import { StorageUsageComponent } from 'src/app/components/storage-usage/storage-usage.component';
+import { FileSizePipe } from 'src/app/pipes/filesize.pipe';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { StorageUsageComponent } from 'src/app/components/storage-usage/storage-
     IonicModule,
     ControlsPageRoutingModule
   ],
-  declarations: [ControlsPage, PumpControlsComponent, BluetoothTimeComponent, TimeNotSyncedPopoverComponent, StorageUsageComponent],
+  declarations: [ControlsPage, PumpControlsComponent, BluetoothTimeComponent, TimeNotSyncedPopoverComponent, StorageUsageComponent, FileSizePipe],
 })
 export class ControlsPageModule {}

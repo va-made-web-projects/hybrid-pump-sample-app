@@ -103,15 +103,26 @@ export class PageDataService {
 
     const pageData: SensorData[] = [];
 
-    for (let page = 0; page <= currentPage; page++) {
-      this.progress.set(page / currentPage);
+    for (let page = 0; page < currentPage; page++) {
+      this.progress.set(page / (currentPage - 1));
       console.log(`Reading page ${page}`);
       const pageContent = await this.readPageData(page);
       if (pageContent !== null) {
         pageData.push(...pageContent);
       }
     }
-    this.allPageData.set(pageData);
-    return pageData;
+    const transformedData = transformTimestamps(pageData);
+    this.allPageData.set(transformedData);
+    return transformedData;
   }
 }
+
+// Function to transform timestamps (multiplying by 1000)
+const transformTimestamps = (data: SensorData[]): SensorData[] => {
+  // if data is all 255 remove from array
+  data = data.filter((item) => item.sensorValue !== 255);
+  return data.map((item) => ({
+    ...item,
+    timestamp: item.timestamp * 1000,
+  }));
+};

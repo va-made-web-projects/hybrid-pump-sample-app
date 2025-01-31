@@ -44,8 +44,8 @@
       </thead>
       <tbody>
         <tr *ngFor="let page of allPagesData">
-          <td>{{ page.timestamp }}</td>
-          <td>{{ page.sensorValue }}</td>
+          <td>{{ page.timestamp | date: "yyyy-MM-dd HH:mm:ss" }}</td>
+          <td>{{ page.sensorValue | millivoltsToInches }}</td>
         </tr>
       </tbody>
     </table>
