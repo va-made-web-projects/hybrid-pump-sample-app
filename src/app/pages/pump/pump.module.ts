@@ -15,6 +15,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { BluetoothButtonComponent } from 'src/app/components/bluetooth-button/bluetooth-button.component';
 import { MillisecondsToTimePipe } from 'src/pipes/milliseconds-to-time.pipe';
 import { ErrorstateComponent } from 'src/app/components/errorstate/errorstate.component';
+import { AppUsageTrackerComponent } from 'src/app/components/app-usage-tracker/app-usage-tracker.component';
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import { ErrorstateComponent } from 'src/app/components/errorstate/errorstate.co
     PressureGraphComponent,
     BluetoothButtonComponent,
     MillisecondsToTimePipe,
-    ErrorstateComponent
+    ErrorstateComponent,
+    AppUsageTrackerComponent
   ],
   providers: [MillisecondsToTimePipe],
   exports: [MillisecondsToTimePipe]

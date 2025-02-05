@@ -69,22 +69,11 @@ export class PumpPage implements OnInit, OnDestroy {
                   this.deviceSettingsService.set("upperThresh",convertedData);
                 }
               });
-            this.bluetoothService.onReadPumpState().then(
-              data => {
-                console.log(data)
-                if (data == 0) {
-                 // is hybrid
-                 this.deviceSettingsService.set("isElectric", true);
-                 this.deviceSettingsService.set("isSilent", false);
-                 this.deviceSettingsService.set("type", "hybrid");
+              this.updatePumpState();
+              setInterval(() => {
+                this.updatePumpState();
+              }, 5000)
 
-                } else if (data == 1) {
-                  this.deviceSettingsService.set("isElectric", false);
-                  this.deviceSettingsService.set("isSilent", true);
-                  this.deviceSettingsService.set("type", "silent");
-                  // is not hybrid
-                }
-              });
 
               this.bluetoothService.onReadErrorState().then(
                 errorState => {
@@ -102,6 +91,25 @@ export class PumpPage implements OnInit, OnDestroy {
         }
     )
 
+  }
+
+  updatePumpState() {
+    this.bluetoothService.onReadPumpState().then(
+      data => {
+        // console.log(data)
+        if (data == 0) {
+         // is hybrid
+         this.deviceSettingsService.set("isElectric", true);
+         this.deviceSettingsService.set("isSilent", false);
+         this.deviceSettingsService.set("type", "hybrid");
+
+        } else if (data == 1) {
+          this.deviceSettingsService.set("isElectric", false);
+          this.deviceSettingsService.set("isSilent", true);
+          this.deviceSettingsService.set("type", "silent");
+          // is not hybrid
+        }
+      });
   }
 
   ngOnDestroy(): void {
