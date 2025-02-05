@@ -40,12 +40,22 @@
         <tr>
           <th>Page Number</th>
           <th>Data</th>
+          <th>Motor</th>
+          <th>Pump Mode</th>
+          <th>Battery</th>
+          <th>Low Threshold</th>
+          <th>High Threshold</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let page of allPagesData">
           <td>{{ page.timestamp | date: "yyyy-MM-dd HH:mm:ss" }}</td>
           <td>{{ page.sensorValue | millivoltsToInches }}</td>
+          <td>{{ page.isMotorRunning ? "Running" : "Stopped" }}</td>
+          <td>{{ page.pumpMode }}</td>
+          <td>{{ page.batteryReading }}</td>
+          <td>{{ page.lowThreshold }}</td>
+          <td>{{ page.highThreshold }}</td>
         </tr>
       </tbody>
     </table>

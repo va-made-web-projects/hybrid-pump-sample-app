@@ -12,6 +12,11 @@ interface PageData {
 interface SensorData {
   timestamp: number;
   sensorValue: number;
+  isMotorRunning: boolean;
+  pumpMode: number;
+  batteryReading: number;
+  lowThreshold: number;
+  highThreshold: number;
 }
 
 @Injectable({
@@ -45,7 +50,6 @@ export class PageDataService {
   }
 
   // Read data for a specific page
-
   async readPageData(pageNumber: number): Promise<SensorData[] | null> {
     try {
       // Write page number to set read offset
@@ -71,6 +75,7 @@ export class PageDataService {
       // );
 
       // Read page data
+      console.log(`Reading data for page ${pageNumber}`);
       const readData = await BleClient.read(
         this.bluetoothService.deviceIDSignal(),
         BLUETOOTH_UUID.dataServiceUUID,
@@ -90,6 +95,31 @@ export class PageDataService {
       return null;
     }
   }
+  async readMultiplePages(startPage: number, pageCount: number, concurrencyLimit = 5): Promise<SensorData[]> {
+    const results: SensorData[] = [];
+
+    for (let i = 0; i < pageCount; i += concurrencyLimit) {
+      const batch = Array.from(
+        {length: Math.min(concurrencyLimit, pageCount - i)},
+        (_, j) => this.readPageData(startPage + i + j)
+      );
+
+      const batchResults = await Promise.all(batch);
+      results.push(...batchResults.filter(page => page !== null).flat() as SensorData[]);
+    }
+
+    return results;
+  }
+
+  // async readMultiplePages(startPage: number, pageCount: number): Promise<SensorData[]> {
+  //   console.log(`Reading ${pageCount} pages starting from ${startPage}`);
+  //   const promises = Array.from({length: pageCount}, (_, i) =>
+  //     this.readPageData(startPage + i)
+  //   );
+
+  //   const results = await Promise.all(promises);
+  //   return results.filter(page => page !== null).flat() as SensorData[];
+  // }
 
 
 
@@ -114,6 +144,37 @@ export class PageDataService {
     const transformedData = transformTimestamps(pageData);
     this.allPageData.set(transformedData);
     return transformedData;
+  }
+
+  async readAllFlashData(): Promise<Uint8Array | null> {
+    try {
+      const totalSize = 16 * 1024 * 1024; // 16 MB
+      const chunkSize = 240; // MTU-optimized chunk size
+      const completeData = new Uint8Array(totalSize);
+      let currentOffset = 0;
+
+      while (currentOffset < totalSize) {
+        const remainingBytes = totalSize - currentOffset;
+        const readSize = Math.min(chunkSize, remainingBytes);
+        // console.log(`Reading ${readSize} bytes at offset ${currentOffset}`);
+
+        const value = await BleClient.read(
+          this.bluetoothService.deviceIDSignal(),
+          BLUETOOTH_UUID.dataTransferServiceUUID,
+          BLUETOOTH_UUID.dataTransferCharUUID
+        );
+
+        const chunkData = new Uint8Array(value.buffer);
+        completeData.set(chunkData, currentOffset);
+
+        currentOffset += readSize;
+      }
+
+      return completeData;
+    } catch (error) {
+      console.error('Error reading flash data:', error);
+      return null;
+    }
   }
 }
 

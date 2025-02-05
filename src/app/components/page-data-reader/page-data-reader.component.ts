@@ -9,6 +9,11 @@ interface PageData {
 interface SensorData {
   timestamp: number;
   sensorValue: number;
+  isMotorRunning: boolean;
+  pumpMode: number;
+  batteryReading: number;
+  lowThreshold: number;
+  highThreshold: number;
 }
 
 @Component({
@@ -32,13 +37,17 @@ export class PageDataReaderComponent implements OnInit {
   }
 
   async readPageData() {
+    console.log('Reading page data');
     try {
       // Read current page number
       this.currentPage = await this.pageDataService.readCurrentPage();
 
       // Read all pages from 0 to current page
       this.allPagesData = await this.pageDataService.readAllPages();
+      // const data = await this.pageDataService.readMultiplePages(0, this.currentPage!, 10);
+      // const data = await this.pageDataService.readAllFlashData();
       this.pagesDataSignal.set(this.allPagesData);
+      console.log('FLASH data', this.allPagesData);
     } catch (error) {
       console.error('Error reading page data:', error);
     }
