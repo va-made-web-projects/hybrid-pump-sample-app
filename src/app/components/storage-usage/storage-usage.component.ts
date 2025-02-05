@@ -41,7 +41,7 @@ export class StorageUsageComponent implements OnInit, OnChanges {
   private calculateUsagePercentage() {
     if (this.capacity > 0) {
       this.usagePercentage = (this.usage / this.capacity) * 100;
-      console.log(this.usagePercentage)
+      // console.log(this.usagePercentage)
     } else {
       this.usagePercentage = 0;
     }
