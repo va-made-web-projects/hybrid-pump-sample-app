@@ -17,7 +17,7 @@ export class ControlsPage implements OnInit, OnDestroy {
   thresholds = { lower: this.upper(), upper: this.lower() };
   connectionSub: Subscription = new Subscription;
   connected: boolean = true;
-  
+
   debug: boolean = false;
 
   constructor(
@@ -61,7 +61,7 @@ export class ControlsPage implements OnInit, OnDestroy {
 
 
   onSaveButtonClick() {
-    console.log("save button clicked");
+    // console.log("save button clicked");
     const lowDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('lowerThresh')()));
     const highDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('upperThresh')()));
     const type = this.deviceSettingsService.select('type')();
