@@ -41,7 +41,7 @@ export class PumpInfoCardComponent  implements OnInit, OnDestroy {
     this.connectionSub = this.bluetoothService.connectionData.subscribe(
       data => {
         this.connected = data
-        console.log("BLE CONNECTED PUMP INFO CARD!!!", this.connected)
+        // console.log("BLE CONNECTED PUMP INFO CARD!!!", this.connected)
       }
     )
 

@@ -38,7 +38,7 @@ export class PumpControlsComponent implements OnInit {
     this.deviceSettingsService.set('lowerThresh', event.detail.value.lower);
     this.deviceSettingsService.set('upperThresh', event.detail.value.upper);
     this.thresholds = { lower: this.upper(), upper: this.lower() };
-    console.log(this.device());
+    // console.log(this.device());
   }
 
   toggleElectrical(event: any) {
@@ -56,7 +56,7 @@ export class PumpControlsComponent implements OnInit {
   }
 
   toggleSilent(event: any) {
-    console.log(event);
+    // console.log(event);
     this.isSilent = event.detail.checked;
     this.isElectric = !event.detail.checked;
     if (this.isSilent) {
