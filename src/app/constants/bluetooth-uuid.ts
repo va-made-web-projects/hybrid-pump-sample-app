@@ -5,7 +5,6 @@ export const BLUETOOTH_UUID = {
   lowThreshCharUUID: '0000fe42-cc7a-482a-984a-7f2ed5b3e58f',
   highThreshCharUUID: '0000fe41-cc7a-482a-984a-7f2ed5b3e58f',
   pumpStateCharUUID: '0000fe43-cc7a-482a-984a-7f2ed5b3e58f',
-  totalPagesCharUUID: '0000fe43-cc7a-482a-984a-7f2ed5b3e58f',
 
   deviceServiceUUID: '0000bc00-cc7a-482a-984a-7f2ed5b3e58f',
   deviceMacCharUUID:'0000bc39-cc7a-482a-984a-7f2ed5b3e58f',
@@ -13,6 +12,8 @@ export const BLUETOOTH_UUID = {
   vnCharUUID:'0000bc41-cc7a-482a-984a-7f2ed5b3e58f',
   motorRuntimeCharUUID:'0000bc42-cc7a-482a-984a-7f2ed5b3e58f',
   errorStateCharUUID:'0000bc43-cc7a-482a-984a-7f2ed5b3e58f',
+  totalPagesCharUUID: '0000bc44-cc7a-482a-984a-7f2ed5b3e58f',
+  writingDataCharUUID: '0000bc45-cc7a-482a-984a-7f2ed5b3e58f',
 
   batteryServiceUUID: '0000180f-0000-1000-8000-00805f9b34fb',
   batteryLevelCharUUID: '00002a19-0000-1000-8000-00805f9b34fb',
@@ -27,6 +28,9 @@ export const BLUETOOTH_UUID = {
 
   timeServiceUUID: '00001805-0000-1000-8000-00805f9b34fb',
   currentTimeCharUUID: '00002a2b-0000-1000-8000-00805f9b34fb',
+
+  dataTransferServiceUUID: '0000181c-0000-1000-8000-00805f9b34fb',
+  dataTransferCharUUID: '00002b3d-0000-1000-8000-00805f9b34fb',
 
 
 }
