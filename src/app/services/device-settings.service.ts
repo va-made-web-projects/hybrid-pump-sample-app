@@ -6,6 +6,7 @@ export interface DeviceState {
   id: string;
   isElectric: boolean;
   isSilent: boolean;
+  isDiagnostic: boolean;
   lowerThresh: number;
   upperThresh: number;
   runtime: number;

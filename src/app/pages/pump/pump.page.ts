@@ -28,7 +28,7 @@ export class PumpPage implements OnInit, OnDestroy {
 
   constructor(
     private deviceSettingsService: DeviceSettingsService,
-    private bluetoothService: BluetoothService,
+    public bluetoothService: BluetoothService,
     private alertService: AlertService
   ) {
   }
@@ -101,6 +101,7 @@ export class PumpPage implements OnInit, OnDestroy {
          // is hybrid
          this.deviceSettingsService.set("isElectric", true);
          this.deviceSettingsService.set("isSilent", false);
+         this.deviceSettingsService.set("isDiagnostic", false);
          this.deviceSettingsService.set("type", "hybrid");
 
         } else if (data == 1) {
@@ -108,6 +109,10 @@ export class PumpPage implements OnInit, OnDestroy {
           this.deviceSettingsService.set("isSilent", true);
           this.deviceSettingsService.set("type", "silent");
           // is not hybrid
+        } else if (data == 2) {
+          this.deviceSettingsService.set("isElectric", false);
+          this.deviceSettingsService.set("isSilent", false);
+          this.deviceSettingsService.set("type", "diagnostic");
         }
       });
   }

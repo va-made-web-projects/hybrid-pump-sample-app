@@ -21,6 +21,10 @@ const routes: Routes = [
   {
     path: 'data',
     loadChildren: () => import('./pages/data/data.module').then( m => m.DataPageModule)
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./pages/admin/admin.module').then( m => m.AdminPageModule)
   }
 ];
 @NgModule({

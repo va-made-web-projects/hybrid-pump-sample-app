@@ -4,6 +4,9 @@ import {
   DeviceState,
 } from '../../services/device-settings.service';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { ConversionsService } from 'src/app/services/conversions.service';
+import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
 
 @Component({
   selector: 'app-pump-controls',
@@ -11,13 +14,6 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
   styleUrls: ['./pump-controls.component.scss'],
 })
 export class PumpControlsComponent implements OnInit {
-  isElectricSignal = this.deviceSettingsService.select('isElectric');
-  isSilentSignal = this.deviceSettingsService.select('isSilent');
-
-  isElectric = true;
-  isSilent = false;
-  isDebug = false;
-
   readonly device = this.deviceSettingsService.state.asReadonly();
 
   upper = this.deviceSettingsService.select('upperThresh');
@@ -26,12 +22,11 @@ export class PumpControlsComponent implements OnInit {
 
   constructor(
     private deviceSettingsService: DeviceSettingsService,
-    private spoofDataService: SpoofDataService
+    private spoofDataService: SpoofDataService,
+    public bluetoothService: BluetoothService
   ) {}
 
   ngOnInit() {
-    this.isElectric = this.isElectricSignal();
-    this.isSilent = this.isSilentSignal();
   }
 
   rangeChange(event: any) {
@@ -41,41 +36,23 @@ export class PumpControlsComponent implements OnInit {
     // console.log(this.device());
   }
 
-  toggleElectrical(event: any) {
-    this.isElectric = event.detail.checked;
-    this.isSilent = !event.detail.checked;
-    if (this.isElectric) {
-      this.deviceSettingsService.set('type', 'hybrid');
-      this.deviceSettingsService.set('isElectric', true);
-      this.deviceSettingsService.set('isSilent', false);
-    } else {
-      this.deviceSettingsService.set('type', 'silent');
-      this.deviceSettingsService.set('isElectric', false);
-      this.deviceSettingsService.set('isSilent', true);
-    }
+  setDataView(num:number):DataView {
+    const buffer = new ArrayBuffer(4);
+    const dataView = new DataView(buffer);
+
+    // Set the value of the DataView to the number 100
+    dataView.setUint32(0, num, true);
+    return dataView
   }
 
-  toggleSilent(event: any) {
-    // console.log(event);
-    this.isSilent = event.detail.checked;
-    this.isElectric = !event.detail.checked;
-    if (this.isSilent) {
-      this.deviceSettingsService.set('type', 'silent');
-      this.deviceSettingsService.set('isElectric', false);
-      this.deviceSettingsService.set('isSilent', true);
-    } else {
-      this.deviceSettingsService.set('type', 'hybrid');
-      this.deviceSettingsService.set('isElectric', true);
-      this.deviceSettingsService.set('isSilent', false);
-    }
-  }
 
-  toggleDebug(event: any) {
-    this.isDebug = event.detail.checked;
-    if (this.isDebug) {
-      this.spoofDataService.startSpoofPressure();
-    } else {
-      this.spoofDataService.stopSpoofPressure();
-    }
+
+  onSaveButtonClick() {
+    // console.log("save button clicked");
+    const lowDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('lowerThresh')()));
+    const highDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('upperThresh')()));
+
+    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.lowThreshCharUUID, lowDataView, BLUETOOTH_UUID.pressureServiceUUID)
+    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.highThreshCharUUID, highDataView, BLUETOOTH_UUID.pressureServiceUUID)
   }
 }

@@ -54,8 +54,8 @@
           <td>{{ page.isMotorRunning ? "Running" : "Stopped" }}</td>
           <td>{{ page.pumpMode }}</td>
           <td>{{ page.batteryReading }}</td>
-          <td>{{ page.lowThreshold }}</td>
-          <td>{{ page.highThreshold }}</td>
+          <td>{{ page.highThreshold | millivoltsToInches }}</td>
+          <td>{{ page.lowThreshold | millivoltsToInches }}</td>
         </tr>
       </tbody>
     </table>

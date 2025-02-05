@@ -16,7 +16,6 @@ export class PumpInfoCardComponent  implements OnInit, OnDestroy {
   connectionSub: Subscription = new Subscription;
 
   connected = false;
-  batteryLevel = signal<number>(0);
   connection = signal<boolean>(false);
   id = signal<string>('')
   currentPressure = signal<number>(0)
@@ -24,7 +23,6 @@ export class PumpInfoCardComponent  implements OnInit, OnDestroy {
 
   constructor(
     private bluetoothService: BluetoothService) {
-      this.batteryLevel = this.bluetoothService.batteryLevelSignal;
       this.connection = this.bluetoothService.connectionStatus;
       this.id = this.bluetoothService.deviceIDSignal
       this.currentPressure = this.bluetoothService.currentPressureSignal;

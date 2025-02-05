@@ -1,0 +1,23 @@
+.battery-container {
+  width: 100px;
+  height: 40px;
+  border: 2px solid #333;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  overflow: hidden;
+}
+.battery-level {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+.full { background-color: green; }
+.medium { background-color: orange; }
+.low { background-color: red; }
+.critical {
+  background-color: red;
+  animation: flash 0.5s infinite alternate;
+}
+@keyframes flash {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+}

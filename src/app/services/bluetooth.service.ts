@@ -302,7 +302,7 @@ export class BluetoothService {
         data = this.parseBatteryReading(value);
         // map to 2000 to 3000 to 0 - 1
         // console.log("BATTERY DATA", data);
-        data = this.mapRange(data, 2000, 2500, 0, 1);
+        // data = this.mapRange(data, 2000, 2500, 0, 1);
 
 
         this.batteryLevelSignal.set(data)
@@ -553,7 +553,6 @@ export class BluetoothService {
   }
 
   async onReadPumpState() {
-    this.pumpStateSignal.set(1)
     try {
       const readData = await BleClient.read(
         this.deviceIDSignal(),
@@ -563,6 +562,7 @@ export class BluetoothService {
 
       if (readData.byteLength > 0) {
         const parsedReading = this.parseInt8DataReading(readData);
+        this.pumpStateSignal.set(parsedReading);
         return parsedReading;
       } else {
         console.log('No data received from Bluetooth device.');

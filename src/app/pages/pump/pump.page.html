@@ -1,6 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>Hybrid Pump</ion-title>
+
+    <ion-buttons slot="end">
+      <app-battery-level [value]="bluetoothService.batteryLevelSignal()"></app-battery-level>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -25,10 +29,8 @@
       </ion-spinner>
       <div class="ion-text-center ion-padding">
         <ion-label>Connecting...</ion-label>
-
       </div>
     </ion-card-content>
-
   </ion-card>
 
   <div *ngIf="connected || debug()">
@@ -42,11 +44,6 @@
   <div *ngIf="connected || debug()">
     <app-pump-info-card upper={{upper()}} lower={{lower()}}></app-pump-info-card>
   </div>
-
-  <div>
-    <app-app-usage-tracker></app-app-usage-tracker>
-  </div>
-
 </ion-content>
 
 

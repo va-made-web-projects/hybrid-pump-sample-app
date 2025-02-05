@@ -1,0 +1,38 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Admin Page</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Admin Page</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+<div>
+   <app-pump-type-control pumpType="admin"></app-pump-type-control>
+</div>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Motor Run Time Limit</ion-card-title>
+  </ion-card-header>
+  <ion-card-subtitle>Set the motor run time limit for how long the hybrid pump will run</ion-card-subtitle>
+  <ion-card-content>
+    <app-limit-timer></app-limit-timer>
+  </ion-card-content>
+</ion-card>
+
+
+<app-bluetooth-time></app-bluetooth-time>
+<app-start-writing></app-start-writing>
+
+  <div>
+    <app-app-usage-tracker></app-app-usage-tracker>
+  </div>
+
+
+</ion-content>

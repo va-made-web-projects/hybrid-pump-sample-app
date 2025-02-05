@@ -13,18 +13,13 @@
 
   <!-- <div *ngIf="connected"> -->
   <div>
+    <app-pump-type-control pumpType="user"></app-pump-type-control>
+
+
     <app-pump-controls></app-pump-controls>
 
-    <app-bluetooth-time></app-bluetooth-time>
 
     <app-storage-usage></app-storage-usage>
-
-    <app-start-writing></app-start-writing>
-
-    <div class="ion-text-center">
-      <ion-button (click)="onSaveButtonClick()">Save
-      </ion-button>
-    </div>
   </div>
   <!-- <div *ngIf="!connected">
     <ion-item>
