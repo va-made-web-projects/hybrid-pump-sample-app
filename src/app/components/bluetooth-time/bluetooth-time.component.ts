@@ -65,7 +65,6 @@ export class BluetoothTimeComponent implements OnInit {
 
   async onWriteTime() {
     try {
-      // Replace with your actual service UUID and characteristic UUID
       const timestamp = new Date().getTime();
       const timestampInSeconds = Math.floor(timestamp / 1000);
 

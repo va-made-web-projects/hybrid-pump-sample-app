@@ -1,8 +1,6 @@
 <ion-card [class.highlight]="!isTimeSynced">
   <ion-card-content>
-    <ion-item-divider color="primary">
-      <ion-label>Device Time</ion-label>
-    </ion-item-divider>
+    <ion-card-title class="ion-text-center">Device Time</ion-card-title>
     <ion-item>
       <ion-label>Current Time</ion-label>
       <ion-badge color="primary" mode="ios">{{ currentTime | date:'mediumTime' }}</ion-badge>
