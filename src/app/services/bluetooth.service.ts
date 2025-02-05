@@ -124,7 +124,7 @@ export class BluetoothService {
 
   requestDevice() {
     return BleClient.requestDevice({
-      services: [BLUETOOTH_UUID.pressureServiceUUID, BLUETOOTH_UUID.batteryServiceUUID, BLUETOOTH_UUID.deviceServiceUUID, BLUETOOTH_UUID.alertServiceUUID, BLUETOOTH_UUID.dataServiceUUID],
+      services: [BLUETOOTH_UUID.pressureServiceUUID, BLUETOOTH_UUID.batteryServiceUUID, BLUETOOTH_UUID.deviceServiceUUID, BLUETOOTH_UUID.alertServiceUUID, BLUETOOTH_UUID.dataServiceUUID, BLUETOOTH_UUID.dataTransferServiceUUID],
       optionalServices: [BLUETOOTH_UUID.timeServiceUUID],
     }).then((deviceId: any) => {
       console.log('DEVICE ID:', deviceId);
@@ -261,7 +261,7 @@ export class BluetoothService {
       characteristic,
       (value: DataView) => {
         data = +this.parseInt16DataReading(value).toString();
-        console.log("data", data);
+        // console.log("data", data);
         let convertedData = ConversionsService.millivoltsToInches(data)
         this.currentPressureSignal.set(convertedData);
         this._notifyData.next(convertedData);
@@ -301,7 +301,7 @@ export class BluetoothService {
       (value: DataView) => {
         data = this.parseBatteryReading(value);
         // map to 2000 to 3000 to 0 - 1
-        console.log("BATTERY DATA", data);
+        // console.log("BATTERY DATA", data);
         data = this.mapRange(data, 2000, 2500, 0, 1);
 
 
@@ -316,11 +316,7 @@ export class BluetoothService {
   }
 
   parseDataReading(data: DataView) {
-    let length = data.byteLength;
-    const data_array = new Int8Array(length / Int8Array.BYTES_PER_ELEMENT);
-    for (let i = 0; i < data_array.length; i++) {
-      data_array[i] = data.getInt8(i * Int8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
-    }
+    const length = data.byteLength;
     const chunkSize = 16; // Each data point is 16 bytes
 
     if (length % chunkSize !== 0) {
@@ -330,23 +326,73 @@ export class BluetoothService {
     const parsedData = [];
 
     for (let offset = 0; offset < length; offset += chunkSize) {
+      if (offset + 16 > length) break;
         // Read timestamp (first 8 bytes, little-endian)
-        const timestamp = data.getBigUint64(offset, true);
+        const timestamp = data.getUint32(offset, true);
 
         // Read sensor value (next 2 bytes, little-endian)
-        const sensorValue = data.getUint16(offset + 8, true);
+        const sensorValue = data.getUint16(offset + 4, true);
 
-        // Skip the 6 bytes of padding (offset + 10 to offset + 16)
+        // Read motor status and pump mode from byte 10
+        const motorByte = data.getUint8(offset + 6);
+        const isMotorRunning = (motorByte & 0x80) !== 0;
+        const pumpMode = motorByte & 0x7F;
+
+        // Read battery reading (bytes 11-12, little-endian)
+        const batteryReading = data.getUint16(offset + 7, true);
+
+        // Read low threshold (bytes 13-14, little-endian)
+        const lowThreshold = data.getUint16(offset + 9, true);
+
+        // Read high threshold (bytes 15-16, little-endian)
+        const highThreshold = data.getUint16(offset + 11, true);
+
         parsedData.push({
-            timestamp: Number(timestamp), // Converting BigInt to Number for ease of use
-            sensorValue
+            timestamp: Number(timestamp),
+            sensorValue,
+            isMotorRunning,
+            pumpMode,
+            batteryReading,
+            lowThreshold,
+            highThreshold
         });
     }
 
-    console.log(parsedData);
-
     return parsedData;
-  }
+}
+
+  // parseDataReading(data: DataView) {
+  //   let length = data.byteLength;
+  //   const data_array = new Int8Array(length / Int8Array.BYTES_PER_ELEMENT);
+  //   for (let i = 0; i < data_array.length; i++) {
+  //     data_array[i] = data.getInt8(i * Int8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
+  //   }
+  //   const chunkSize = 16; // Each data point is 16 bytes
+
+  //   if (length % chunkSize !== 0) {
+  //       throw new Error("Data length is not a multiple of 16 bytes.");
+  //   }
+
+  //   const parsedData = [];
+
+  //   for (let offset = 0; offset < length; offset += chunkSize) {
+  //       // Read timestamp (first 8 bytes, little-endian)
+  //       const timestamp = data.getBigUint64(offset, true);
+
+  //       // Read sensor value (next 2 bytes, little-endian)
+  //       const sensorValue = data.getUint16(offset + 8, true);
+
+  //       // Skip the 6 bytes of padding (offset + 10 to offset + 16)
+  //       parsedData.push({
+  //           timestamp: Number(timestamp), // Converting BigInt to Number for ease of use
+  //           sensorValue
+  //       });
+  //   }
+
+  //   console.log(parsedData);
+
+  //   return parsedData;
+  // }
 
 
 
@@ -414,7 +460,7 @@ export class BluetoothService {
         BLUETOOTH_UUID.batteryLevelCharUUID
       );
 
-      console.log('BATTERY READ DATA:', readData);
+      // console.log('BATTERY READ DATA:', readData);
 
       if (readData.byteLength > 0) {
         const parsedReading = this.parseInt16DataReading(readData);
@@ -450,7 +496,7 @@ export class BluetoothService {
 
       if (readData.byteLength > 0) {
         const parsedReading = this.parseInt32DataReading(readData);
-        console.log('READ THRESH:', parsedReading);
+        // console.log('READ THRESH:', parsedReading);
         return parsedReading;
       } else {
         console.log('No data received from Bluetooth device.');
@@ -480,10 +526,10 @@ export class BluetoothService {
         BLUETOOTH_UUID.deviceServiceUUID,
         BLUETOOTH_UUID.motorRuntimeCharUUID
       );
-      console.log('READ RAW MOTOR RUNTIME:', readData);
+      // console.log('READ RAW MOTOR RUNTIME:', readData);
       if (readData.byteLength > 0) {
         const parsedReading = this.parseInt32DataReading(readData);
-        console.log('READ MOTOR RUNTIME:', parsedReading);
+        // console.log('READ MOTOR RUNTIME:', parsedReading);
         return parsedReading;
       } else {
         console.log('No data received from Bluetooth device.');
@@ -657,7 +703,7 @@ export class BluetoothService {
       // Assuming the timestamp is sent as a 4-byte unsigned integer
       const timestamp = value.getUint32(0, true); // true for little-endian
       this.currentTimeSignal.set(timestamp);
-      console.log('READ TIMESTAMP:', timestamp);
+      // console.log('READ TIMESTAMP:', timestamp);
       return timestamp;
     } catch (error) {
       console.error('Error reading timestamp:', error);
@@ -677,7 +723,7 @@ export class BluetoothService {
       const view = new DataView(buffer);
       view.setUint32(0, timestamp, true); // Little-endian
 
-      console.log('Writing timestamp:', view);
+      // console.log('Writing timestamp:', view);
 
       // Assuming `this.timeCharacteristic` is initialized and ready for writing
       await this.onWriteDataWithoutResponse(BLUETOOTH_UUID.currentTimeCharUUID, view, BLUETOOTH_UUID.timeServiceUUID);
@@ -699,7 +745,7 @@ export class BluetoothService {
       // Assuming the timestamp is sent as a 4-byte unsigned integer
       const totalPages = value.getUint32(0, true); // true for little-endian
       this.totalPagesSignal.set(totalPages);
-      console.log('READ TotalPages:', totalPages);
+      // console.log('READ TotalPages:', totalPages);
       return totalPages;
     } catch (error) {
       console.error('Error reading total pages:', error);
@@ -707,5 +753,39 @@ export class BluetoothService {
     }
   }
 
+async readWritingData(): Promise<boolean> {
+    try {
+      const value = await BleClient.read(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.writingDataCharUUID
+      );
+
+      // Convert ArrayBuffer to DataView and read first byte
+      const dataView = new DataView(value.buffer);
+      return dataView.getUint8(0) === 1;
+    } catch (error) {
+      console.error('Error reading Bluetooth writing data state:', error);
+      return false;
+    }
+}
+
+async writeWritingData(state: boolean): Promise<void> {
+    try {
+      // Create ArrayBuffer with DataView
+      const buffer = new ArrayBuffer(1);
+      const dataView = new DataView(buffer);
+      dataView.setUint8(0, state ? 1 : 0);
+
+      await BleClient.writeWithoutResponse(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.writingDataCharUUID,
+        dataView
+      );
+    } catch (error) {
+      console.error('Error writing Bluetooth writing data state:', error);
+    }
+}
 
 }
