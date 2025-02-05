@@ -13,14 +13,22 @@ import { BluetoothTimeComponent } from 'src/app/components/bluetooth-time/blueto
 import { TimeNotSyncedPopoverComponent } from 'src/app/components/time-not-synced-popover/time-not-synced-popover.component';
 import { StorageUsageComponent } from 'src/app/components/storage-usage/storage-usage.component';
 import { FileSizePipe } from 'src/app/pipes/filesize.pipe';
+import { StartWritingComponent } from 'src/app/components/start-writing/start-writing.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    ControlsPageRoutingModule
+	imports: [
+		CommonModule,
+		FormsModule,
+		IonicModule,
+		ControlsPageRoutingModule
+	],
+	declarations: [ControlsPage,
+    PumpControlsComponent,
+    BluetoothTimeComponent,
+    TimeNotSyncedPopoverComponent,
+    StorageUsageComponent,
+    FileSizePipe,
+    StartWritingComponent
   ],
-  declarations: [ControlsPage, PumpControlsComponent, BluetoothTimeComponent, TimeNotSyncedPopoverComponent, StorageUsageComponent, FileSizePipe],
 })
 export class ControlsPageModule {}

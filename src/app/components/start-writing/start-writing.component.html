@@ -1,0 +1,19 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Writing Data Status</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-item>
+      <ion-badge slot="end" [color]="isWriting ? 'success' : 'danger'">
+        {{ isWriting ? 'Writing' : 'Not Writing' }}
+      </ion-badge>
+
+      <ion-button
+        (click)="toggleWritingData()"
+        [color]="isWriting ? 'danger' : 'success'"
+      >
+        {{ isWriting ? 'Stop Writing' : 'Start Writing' }}
+      </ion-button>
+    </ion-item>
+  </ion-card-content>
+</ion-card>
