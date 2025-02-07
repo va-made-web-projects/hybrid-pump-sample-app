@@ -1,8 +1,12 @@
-
 <div class="battery-container">
+  <img
+    src="assets/battery-outline.png"
+    class="battery-image"
+    alt="Battery Level"
+  />
   <div
     class="battery-level"
     [class]="batteryStateClass"
-    [style.width.%]="batteryPercentage">
-  </div>
+    [style.width.%]="batteryPercentage"
+  ></div>
 </div>

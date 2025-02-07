@@ -20,7 +20,7 @@ export class BatteryLevelComponent implements OnChanges {
   private updateBatteryState() {
     console.log('Battery level:', this.value);
     // Calculate percentage
-    this.batteryPercentage = Math.min(100, (this.value / 2500) * 100);
+    this.batteryPercentage = Math.min(100, Math.max(0, ((this.value - 2000) / (2900 - 2000)) * 100));
     console.log('Battery level:', this.batteryPercentage);
 
     // Determine battery state
