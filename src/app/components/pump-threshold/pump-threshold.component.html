@@ -1,0 +1,34 @@
+<ion-card>
+  <ion-item-group *ngIf="userType === 'admin'">
+    <ion-item-divider color="primary">
+      <ion-label>Thresholds</ion-label>
+      <app-info-button class="ion-no-padding"
+        popoverContent="Set the high and low threshold for the pump in inHg">
+      </app-info-button>
+    </ion-item-divider>
+    <ion-item class="thresh-badge">
+        <p class="ion-padding-horizontal">Lower:</p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{thresholds.upper}}</ion-badge>
+        <p class="ion-padding-horizontal">Upper: </p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{thresholds.lower}}</ion-badge>
+    </ion-item>
+    <ion-item>
+        <ion-range (ionChange)="rangeChange($event)" min="10" max="20" pin="true"
+        snaps="true" step="1" aria-label="Dual Knobs Range" [dualKnobs]="true" [value]="thresholds"></ion-range>
+    </ion-item>
+  </ion-item-group>
+  <ion-item-group *ngIf="userType === 'user'">
+    <ion-item-divider color="primary">
+      <ion-label>Thresholds</ion-label>
+    </ion-item-divider>
+    <ion-item class="thresh-badge">
+        <p class="ion-padding-horizontal">Threshold: </p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{thresholds.lower}}</ion-badge>
+    </ion-item>
+    <ion-item>
+        <ion-range (ionChange)="singleRangeChange($event)" min="10" max="20" pin="true"
+        snaps="true" step="1" [dualKnobs]="false" [value]="thresholds"></ion-range>
+    </ion-item>
+  </ion-item-group>
+  <div class="ion-text-center">
+    <ion-button (click)="onSaveButtonClick()">Save
+    </ion-button>
+  </div>
+</ion-card>

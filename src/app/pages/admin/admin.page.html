@@ -16,22 +16,31 @@
    <app-pump-type-control pumpType="admin"></app-pump-type-control>
 </div>
 
-<ion-card>
-  <ion-card-header>
-    <ion-card-title>Motor Run Time Limit</ion-card-title>
-  </ion-card-header>
-  <ion-card-subtitle>Set the motor run time limit for how long the hybrid pump will run</ion-card-subtitle>
-  <ion-card-content>
-    <app-limit-timer></app-limit-timer>
-  </ion-card-content>
-</ion-card>
+<div>
+  <app-pump-threshold userType="admin"></app-pump-threshold>
+</div>
 
+<div>
+  <app-limit-timer></app-limit-timer>
+</div>
 
-<app-bluetooth-time></app-bluetooth-time>
-<app-start-writing></app-start-writing>
+<div>
+  <app-bluetooth-time></app-bluetooth-time>
+</div>
+
+<div>
+  <app-start-writing></app-start-writing>
+</div>
+
+<div>
+  <app-storage-usage></app-storage-usage>
+</div>
 
   <div>
     <app-app-usage-tracker></app-app-usage-tracker>
+  </div>
+  <div>
+    <app-reset-nvs></app-reset-nvs>
   </div>
 
 

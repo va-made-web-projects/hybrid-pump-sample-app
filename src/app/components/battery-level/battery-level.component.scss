@@ -18,7 +18,10 @@
   bottom: 12px;
   left: 6px;
   height: 40%;
-  width: 0;
+  /* Add right padding to stop before the end */
+  right: 12px;
+  /* Remove width property since we're using right padding */
+  max-width: calc(100% - 18px);
   transition: all 0.3s ease;
   z-index: 1;
 }

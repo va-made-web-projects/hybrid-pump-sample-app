@@ -8,10 +8,21 @@ import { BLUETOOTH_UUID } from './../constants/bluetooth-uuid';
 import { ScanResult } from './../../../node_modules/@capacitor-community/bluetooth-le/dist/esm/definitions.d';
 import { ConversionsService } from './conversions.service';
 import { AlertService } from './alert.service';
+import { DeviceSettingsService } from './device-settings.service';
 
 
 interface BluetoothDevice {
   deviceId: string;
+}
+
+interface SensorData {
+  timestamp: number;
+  sensorValue: number;
+  isMotorRunning: boolean;
+  pumpMode: number;
+  batteryReading: number;
+  lowThreshold: number;
+  highThreshold: number;
 }
 
 interface PageData {
@@ -48,6 +59,15 @@ export class BluetoothService {
   currentTimeSignal = signal(0);
   isConnecting = signal(true);
   totalPagesSignal = signal(0)
+  motorRunTimeLimitSignal = signal(0);
+  lowThresholdSignal = signal(0);
+  highThresholdSignal = signal(0);
+  progress = signal(0);
+
+
+  fullFlashData: SensorData[] = []
+  fullFlashPages: number = 0;
+
 
 
   constructor(
@@ -92,7 +112,7 @@ export class BluetoothService {
   initialize() {
     this.isConnecting.set(true)
     try {
-      BleClient.initialize().then(
+      BleClient.initialize({ androidNeverForLocation: true }).then(
         (success: any) => {
           this._bleEnabled.next(true);
         },
@@ -115,6 +135,8 @@ export class BluetoothService {
   }
 
   checkBluetooth() {
+    console.log('CHECKING BLUETOOTH');
+
     return BleClient.isEnabled();
   }
 
@@ -289,6 +311,49 @@ export class BluetoothService {
     return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
   }
 
+  async onNotifyFlashData() {
+    const service = BLUETOOTH_UUID.dataServiceUUID;
+    const characteristic = BLUETOOTH_UUID.readFullFlashCharUUID;
+    let data: SensorData[];
+    await BleClient.startNotifications(
+      this.deviceIDSignal(),
+      service,
+      characteristic,
+      (value: DataView) => { // callback for notificiantion
+        data = Array.from(this.parseDataReading(value));
+        this.fullFlashData.push(...data)
+
+        console.log(`FLASH DATA Page ${this.fullFlashPages}/${this.totalPagesSignal()}`, data);
+        this.fullFlashPages++;
+        this.progress.set(this.fullFlashPages / (this.totalPagesSignal() - 1));
+
+        if (this.fullFlashPages === this.totalPagesSignal()) {
+          console.log(`Full flash read:`, this.fullFlashData);
+        }
+
+
+      }
+    );
+  }
+
+  async onReadFlashData() {
+
+    this.readTotalPages();
+    this.fullFlashPages = 0
+    const service = BLUETOOTH_UUID.dataServiceUUID;
+    const characteristic = BLUETOOTH_UUID.readFullFlashCharUUID;
+    let data: number;
+
+
+    await BleClient.read(
+      this.deviceIDSignal(),
+      service,
+      characteristic
+    );
+
+
+  }
+
 
   async onNotifyBatteryData(deviceId:string) {
     const service = BLUETOOTH_UUID.batteryServiceUUID;
@@ -357,42 +422,8 @@ export class BluetoothService {
             highThreshold
         });
     }
-
     return parsedData;
 }
-
-  // parseDataReading(data: DataView) {
-  //   let length = data.byteLength;
-  //   const data_array = new Int8Array(length / Int8Array.BYTES_PER_ELEMENT);
-  //   for (let i = 0; i < data_array.length; i++) {
-  //     data_array[i] = data.getInt8(i * Int8Array.BYTES_PER_ELEMENT); // true for little-endian byte order
-  //   }
-  //   const chunkSize = 16; // Each data point is 16 bytes
-
-  //   if (length % chunkSize !== 0) {
-  //       throw new Error("Data length is not a multiple of 16 bytes.");
-  //   }
-
-  //   const parsedData = [];
-
-  //   for (let offset = 0; offset < length; offset += chunkSize) {
-  //       // Read timestamp (first 8 bytes, little-endian)
-  //       const timestamp = data.getBigUint64(offset, true);
-
-  //       // Read sensor value (next 2 bytes, little-endian)
-  //       const sensorValue = data.getUint16(offset + 8, true);
-
-  //       // Skip the 6 bytes of padding (offset + 10 to offset + 16)
-  //       parsedData.push({
-  //           timestamp: Number(timestamp), // Converting BigInt to Number for ease of use
-  //           sensorValue
-  //       });
-  //   }
-
-  //   console.log(parsedData);
-
-  //   return parsedData;
-  // }
 
 
 
@@ -787,5 +818,94 @@ async writeWritingData(state: boolean): Promise<void> {
       console.error('Error writing Bluetooth writing data state:', error);
     }
 }
+async writeNVSResetData(state: boolean): Promise<void> {
+    try {
+      // Create ArrayBuffer with DataView
+      const buffer = new ArrayBuffer(1);
+      const dataView = new DataView(buffer);
+      dataView.setUint8(0, state ? 1 : 0);
 
+      await BleClient.writeWithoutResponse(
+        this.deviceIDSignal(),
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.resetNVSDataCharUUID,
+        dataView
+      );
+    } catch (error) {
+      console.error('Error writing Bluetooth NVS Reset data state:', error);
+    }
+}
+
+updateDeviceState(deviceSettingsService: DeviceSettingsService) {
+  this.onReadThreshold(BLUETOOTH_UUID.lowThreshCharUUID).then(
+    data => {
+      if (data) {
+        let convertedData = ConversionsService.millivoltsToInches(data)
+        deviceSettingsService.set("lowerThresh",convertedData);
+      }
+    });
+    this.onReadThreshold(BLUETOOTH_UUID.highThreshCharUUID).then(
+      data => {
+        if (data) {
+        let convertedData = ConversionsService.millivoltsToInches(data)
+        deviceSettingsService.set("upperThresh",convertedData);
+      }
+    });
+}
+
+setUint32DataView(num:number):DataView {
+  const buffer = new ArrayBuffer(4);
+  const dataView = new DataView(buffer);
+
+  // Set the value of the DataView to the number 100
+  dataView.setUint32(0, num, true);
+  return dataView
+}
+
+
+  setPumpStateDataView(num:number):DataView {
+    const buffer = new ArrayBuffer(1);
+    const dataView = new DataView(buffer);
+
+    // Set the value of the DataView to the number 100
+    dataView.setUint8(0, num);
+    return dataView
+  }
+
+  setPumpState(value: number) {
+    this.onWriteDataWithoutResponse(BLUETOOTH_UUID.pumpStateCharUUID, this.setPumpStateDataView(value), BLUETOOTH_UUID.pressureServiceUUID)
+  }
+
+  async onReadMotorRunTimeLimit() {
+      try {
+        const readData = await BleClient.read(
+          this.deviceIDSignal(),
+          BLUETOOTH_UUID.pressureServiceUUID,
+          BLUETOOTH_UUID.normalTimerCharUUID
+        );
+
+        if (readData.byteLength > 0) {
+          const parsedReading = this.parseInt8DataReading(readData);
+          this.motorRunTimeLimitSignal.set(parsedReading);
+          return parsedReading;
+        } else {
+          console.log('No data received from Bluetooth device.');
+          return null;
+        }
+      } catch (error) {
+        console.log('Read BT data error:', error);
+        // Assert that the error is of type 'Error'
+        if ((error as Error).message && (error as Error).message.includes('Not connected')) {
+          if (!this.isReconnecting) {
+            this.isReconnecting = true;
+            this._connection.next(false);
+            this.connectionStatus.set(false)
+
+            this.onConnectDevice(this.deviceIDSignal());
+          }
+        }
+        // If there's an error, return null
+        return null;
+      }
+    }
 }

@@ -1,4 +1,4 @@
-<ion-tabs>
+<ion-tabs #tabs>
 
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="pump" href="/tabs/pump">
@@ -6,24 +6,19 @@
       <ion-label>Pump</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="controls" href="/tabs/controls">
-      <ion-icon aria-hidden="true" name="construct-outline"></ion-icon>
-      <ion-label>Controls</ion-label>
-    </ion-tab-button>
-
-    <!-- <ion-tab-button tab="settings" href="/tabs/settings">
+    <ion-tab-button tab="settings" href="/tabs/settings">
       <ion-icon aria-hidden="true" name="settings-outline"></ion-icon>
       <ion-label>Settings</ion-label>
-    </ion-tab-button> -->
+    </ion-tab-button>
 
-    <ion-tab-button tab="admin" href="/tabs/data">
-      <ion-icon aria-hidden="true" name="list-circle-outline"></ion-icon>
-      <ion-label>Admin</ion-label>
-    </ion-tab-button>
-    <ion-tab-button tab="data" href="/tabs/data">
-      <ion-icon aria-hidden="true" name="analytics-outline"></ion-icon>
-      <ion-label>Data</ion-label>
-    </ion-tab-button>
+      <ion-tab-button *ngIf="userType === 'admin'" tab="admin" href="/tabs/data">
+        <ion-icon aria-hidden="true" name="list-circle-outline"></ion-icon>
+        <ion-label>Admin</ion-label>
+      </ion-tab-button>
+      <ion-tab-button *ngIf="userType === 'admin'" tab="data" href="/tabs/data">
+        <ion-icon aria-hidden="true" name="analytics-outline"></ion-icon>
+        <ion-label>Data</ion-label>
+      </ion-tab-button>
   </ion-tab-bar>
 
 </ion-tabs>

@@ -28,7 +28,7 @@ export class BluetoothTimeComponent implements OnInit {
   updateCurrentTime() {
     setInterval(() => {
       this.currentTime = new Date(new Date().getTime() / 1000);
-      console.log('Current time:', this.currentTime.getTime() * 1000);
+      // console.log('Current time:', this.currentTime.getTime() * 1000);
       this.currentTime = new Date(this.currentTime.getTime() * 1000);
     }, 1000);
   }

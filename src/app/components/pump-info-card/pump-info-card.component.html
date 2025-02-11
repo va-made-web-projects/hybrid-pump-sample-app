@@ -10,22 +10,25 @@
 
     </ion-card-title>
   </ion-card-header>
+  <app-info-button class="ion-no-padding"
+    popoverContent="Device Information">
+  </app-info-button>
   <ion-card-content>
     <ion-list>
-      <ion-label>Thresholds</ion-label>
-      <ion-item>
+      <ion-label>Threshold</ion-label>
+      <!-- <ion-item>
         <ion-label class="">Lower:</ion-label><ion-badge class="" color="primary" mode="ios">{{lower}}</ion-badge>
-      </ion-item>
+      </ion-item> -->
       <ion-item>
         <ion-label class="">Upper: </ion-label><ion-badge class="" color="primary" mode="ios">{{upper}}</ion-badge>
       </ion-item>
-      <ion-label>Current Reading</ion-label>
-      <ion-item>
+      <!-- <ion-label>Current Reading</ion-label> -->
+      <!-- <ion-item>
         <ion-label>Vacuum</ion-label>
         <ion-badge color="primary" mode="ios">{{currentPressure()}}</ion-badge>
-      </ion-item>
+      </ion-item> -->
       <ion-item>
-        <ion-label>Use</ion-label>
+        <ion-label>Motor Use</ion-label>
         <ion-badge color="primary" mode="ios">{{currentMotorRuntime | millisecondsToTime }}</ion-badge>
       </ion-item>
     </ion-list>

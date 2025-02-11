@@ -6,8 +6,11 @@
     <ion-card-title>
     </ion-card-title>
   </ion-card-header>
+  <app-info-button class="ion-no-padding"
+        popoverContent="Status of the Pump, Hybrid, Silent, Diagnostic. Press the button to change">
+  </app-info-button>
   <ion-card-content>
-    <ion-item>
+    <ion-item (click)="openModal()">
       <ng-container [ngSwitch]="pumpStatus" >
         <ion-label *ngSwitchCase="'hybrid'" class="ion-text-center">
           <ion-badge class="badge" color="success">Hybrid</ion-badge>

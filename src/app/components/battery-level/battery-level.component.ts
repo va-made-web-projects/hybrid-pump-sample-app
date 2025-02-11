@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { min } from 'rxjs';
 
 @Component({
   selector: 'app-battery-level',
@@ -7,6 +8,8 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 })
 export class BatteryLevelComponent implements OnChanges {
   @Input() value: number = 0;
+  minBattery = 2150
+  maxBattery = 2500
 
   batteryPercentage: number = 0;
   batteryStateClass: string = '';
@@ -18,10 +21,10 @@ export class BatteryLevelComponent implements OnChanges {
   }
 
   private updateBatteryState() {
-    console.log('Battery level:', this.value);
+    // console.log('Battery level:', this.value);
     // Calculate percentage
-    this.batteryPercentage = Math.min(100, Math.max(0, ((this.value - 2000) / (2900 - 2000)) * 100));
-    console.log('Battery level:', this.batteryPercentage);
+    this.batteryPercentage = Math.min(100, Math.max(0, ((this.value - this.minBattery) / (this.maxBattery - this.minBattery)) * 100));
+    // console.log('Battery level:', this.batteryPercentage);
 
     // Determine battery state
     if (this.batteryPercentage > 75) {

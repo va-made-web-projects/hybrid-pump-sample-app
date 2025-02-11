@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+
 import { IonicModule } from '@ionic/angular';
 
 import { PumpPageRoutingModule } from './pump-routing.module';
@@ -16,6 +17,8 @@ import { BluetoothButtonComponent } from 'src/app/components/bluetooth-button/bl
 import { MillisecondsToTimePipe } from 'src/pipes/milliseconds-to-time.pipe';
 import { ErrorstateComponent } from 'src/app/components/errorstate/errorstate.component';
 import { BatteryLevelComponent } from 'src/app/components/battery-level/battery-level.component';
+import { SwitchPumpTypeComponent } from 'src/app/modal/switch-pump-type/switch-pump-type.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
@@ -24,6 +27,7 @@ import { BatteryLevelComponent } from 'src/app/components/battery-level/battery-
     IonicModule,
     PumpPageRoutingModule,
     BaseChartDirective,
+    SharedModule
   ],
   declarations: [
     PumpPage,
@@ -34,7 +38,8 @@ import { BatteryLevelComponent } from 'src/app/components/battery-level/battery-
     BluetoothButtonComponent,
     MillisecondsToTimePipe,
     ErrorstateComponent,
-    BatteryLevelComponent
+    BatteryLevelComponent,
+    SwitchPumpTypeComponent,
   ],
   providers: [MillisecondsToTimePipe],
   exports: [MillisecondsToTimePipe]

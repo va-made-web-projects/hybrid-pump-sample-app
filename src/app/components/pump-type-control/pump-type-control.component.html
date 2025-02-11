@@ -1,15 +1,19 @@
 
-<ion-item-divider color="primary">
-  <ion-label>Pump Type</ion-label>
-</ion-item-divider>
-<ion-list>
-  <ion-item>
-    <ion-label>Current Pump Status</ion-label>
-    <ng-container [ngSwitch]="bluetoothService.pumpStateSignal()">
-      <ion-badge *ngSwitchCase="0" class="badge" color="success">Hybrid</ion-badge>
-      <ion-badge *ngSwitchCase="1" class="badge" color="danger">Silent</ion-badge>
-      <ion-badge *ngSwitchCase="2" class="badge" color="warning">Diagnostic</ion-badge>
-    </ng-container>
+<ion-card>
+  <ion-item-divider color="primary">
+    <ion-label>Pump Type</ion-label>
+    <app-info-button class="ion-no-padding"
+      popoverContent="Switch the running pump type with the button below">
+    </app-info-button>
+  </ion-item-divider>
+  <ion-list>
+    <ion-item>
+      <ion-label>Current Pump Status</ion-label>
+      <ng-container [ngSwitch]="bluetoothService.pumpStateSignal()">
+        <ion-badge *ngSwitchCase="0" class="badge" color="success">Hybrid</ion-badge>
+        <ion-badge *ngSwitchCase="1" class="badge" color="danger">Silent</ion-badge>
+        <ion-badge *ngSwitchCase="2" class="badge" color="warning">Diagnostic</ion-badge>
+      </ng-container>
   </ion-item>
   <ion-list>
     <ion-button class="ion-margin"
@@ -17,10 +21,11 @@
       [color]="type.color"
       [disabled]="type.value === bluetoothService.pumpStateSignal()"
       [class.inactive]="type.value === bluetoothService.pumpStateSignal()"
-      (click)="setPumpState(type.value)">
+      (click)="bluetoothService.setPumpState(type.value)">
       {{ type.label }}
     </ion-button>
   </ion-list>
 
 </ion-list>
+</ion-card>
 

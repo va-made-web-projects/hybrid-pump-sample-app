@@ -27,27 +27,56 @@ export class PageDataReaderComponent implements OnInit {
   groupedData: Record<string,SensorData[]> = {};
 
   pagesDataSignal = signal<SensorData[]>([]);
+  first_page: SensorData[] = [];
+  last_page: SensorData[] = [];
 
   constructor(public pageDataService: PageDataService) {}
 
   async ngOnInit() {
-    await this.readPageData();
+    await this.onReadPageData();
 
     this.groupedData = this.groupDataBySecond(this.allPagesData);
   }
 
-  async readPageData() {
+  formatTime(page: number): string {
+    return this.calculateRecordedTime(page);
+  }
+
+  calculateRecordedTime(currentPage: number): string {
+    // Calculate total seconds
+    const totalSeconds = currentPage * 16;
+
+    // Convert to hours, minutes, seconds
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    // Format the output
+    return `${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  async onReadPageData() {
     console.log('Reading page data');
     try {
       // Read current page number
       this.currentPage = await this.pageDataService.readCurrentPage();
 
       // Read all pages from 0 to current page
-      this.allPagesData = await this.pageDataService.readAllPages();
+      // this.allPagesData = await this.pageDataService.readAllPages();
+      this.first_page = await this.pageDataService.readSinglePage(0) || [];
+      let last_page_num = this.currentPage! - 1;
+      if (last_page_num < 0) {
+        last_page_num = 0;
+      }
+      this.last_page = await this.pageDataService.readSinglePage(last_page_num) || [];
+
       // const data = await this.pageDataService.readMultiplePages(0, this.currentPage!, 10);
       // const data = await this.pageDataService.readAllFlashData();
-      this.pagesDataSignal.set(this.allPagesData);
-      console.log('FLASH data', this.allPagesData);
+      // combine the first and last pages
+
+      this.pagesDataSignal.set(this.first_page.concat(this.last_page));
+      // this.pagesDataSignal.set(this.last_page);
+      // this.allPagesData = this.pagesDataSignal();
     } catch (error) {
       console.error('Error reading page data:', error);
     }

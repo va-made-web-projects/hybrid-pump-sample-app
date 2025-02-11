@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { Preferences } from '@capacitor/preferences';
+import { DarkModeService } from 'src/app/services/dark-mode.service';
+
 
 @Component({
   selector: 'app-main-settings',
@@ -6,21 +9,33 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main-settings.component.scss'],
 })
 export class MainSettingsComponent  implements OnInit {
-  darkMode = false;
   notifications = false;
   soundEffects = false;
   autoConnect = false;
   autoStart = false;
   autoStop = false;
+  darkMode = false;
 
+  paletteToggle = false;
 
-  constructor() { }
+  constructor(private darkModeService: DarkModeService) { }
 
-  ngOnInit() {}
-
-  toggleDarkMode() {
-    this.darkMode = !this.darkMode;
+  ngOnInit() {
+    this.loadDarkMode();
+    // Use matchMedia to check the user preference
   }
+
+  async loadDarkMode() {
+    this.darkMode = (await Preferences.get({ key: 'darkMode' })).value === 'true';
+
+  }
+
+    // Listen for the toggle check/uncheck to toggle the dark palette
+  toggleChange(event: CustomEvent) {
+    this.darkModeService.toggleDarkPalette(event.detail.checked);
+  }
+
+
 
   toggleNotifications() {
     this.notifications = !this.notifications;

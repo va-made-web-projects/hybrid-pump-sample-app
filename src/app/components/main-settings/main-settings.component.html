@@ -5,9 +5,11 @@
     </ion-item-divider>
     <!-- toggle settings for app -->
     <ion-item>
-      <ion-toggle aria-label="Notifications" [(ngModel)]="darkMode" (ionChange)="toggleDarkMode()">Dark Mode</ion-toggle>
+      <ion-toggle [(ngModel)]="darkMode" (ionChange)="toggleChange($event)" justify="space-between"
+        >Dark Mode</ion-toggle
+      >
     </ion-item>
-    <ion-item>
+    <!-- <ion-item>
       <ion-toggle aria-label="Notifications" [(ngModel)]="notifications" (ionChange)="toggleNotifications()">Notifications</ion-toggle>
     </ion-item>
     <ion-item>
@@ -22,6 +24,6 @@
     </ion-item>
     <ion-item>
       <ion-toggle aria-label="Auto-Stop" [(ngModel)]="autoStop" (ionChange)="toggleAutoStop()">Auto-Stop</ion-toggle>
-    </ion-item>
+    </ion-item> -->
   </ion-item-group>
 </ion-list>

@@ -1,0 +1,21 @@
+<ion-content class="ion-padding ion-text-center">
+  <div class="modal-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          Switch to
+          <ion-badge size="large" [color]="getTitleColor()">{{ pumpType }}</ion-badge>
+        </ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>Are you sure you want to switch to {{ pumpType }} mode?</p>
+      </ion-card-content>
+
+      <ion-footer>
+        <ion-button fill="clear" (click)="dismiss(false)">Cancel</ion-button>
+        <ion-button (click)="dismiss(true)">OK</ion-button>
+      </ion-footer>
+    </ion-card>
+  </div>
+</ion-content>

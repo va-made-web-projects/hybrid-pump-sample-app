@@ -55,24 +55,11 @@ export class PumpPage implements OnInit, OnDestroy {
         this.connected = data
         if (this.connected) {
           console.log("connected")
-            this.bluetoothService.onReadThreshold(BLUETOOTH_UUID.lowThreshCharUUID).then(
-              data => {
-                if (data) {
-                  let convertedData = ConversionsService.millivoltsToInches(data)
-                  this.deviceSettingsService.set("lowerThresh",convertedData);
-                }
-              });
-              this.bluetoothService.onReadThreshold(BLUETOOTH_UUID.highThreshCharUUID).then(
-                data => {
-                  if (data) {
-                  let convertedData = ConversionsService.millivoltsToInches(data)
-                  this.deviceSettingsService.set("upperThresh",convertedData);
-                }
-              });
-              this.updatePumpState();
+          this.bluetoothService.updateDeviceState(this.deviceSettingsService);
+          this.updatePumpState();
               setInterval(() => {
                 this.updatePumpState();
-              }, 5000)
+              }, 1000)
 
 
               this.bluetoothService.onReadErrorState().then(

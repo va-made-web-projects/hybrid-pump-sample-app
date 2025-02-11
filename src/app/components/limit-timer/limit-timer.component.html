@@ -1,4 +1,19 @@
-<ion-item>
-  <ion-range (ionChange)="rangeChange($event)" min="0" max="30" pin="true"
-  snaps="true" step="1" [value]="run_time"></ion-range>
+<ion-card>
+  <ion-item-divider color="primary">
+    <ion-label>Motor Run Time Limit</ion-label>
+    <app-info-button class="ion-no-padding"
+        popoverContent="Set how long the motor will run (in seconds) before timing out if the threshold is not met">
+      </app-info-button>
+  </ion-item-divider>
+  <ion-item class="thresh-badge">
+    <p class="ion-padding-horizontal">Run Time: (secs)</p><ion-badge class="ion-padding-horizontal" color="primary" mode="ios">{{bluetoothService.motorRunTimeLimitSignal()}}</ion-badge>
 </ion-item>
+  <ion-item>
+    <ion-range (ionChange)="rangeChange($event)" min="0" max="30" pin="true"
+    snaps="true" step="1" [value]="bluetoothService.motorRunTimeLimitSignal()"></ion-range>
+  </ion-item>
+  <div class="ion-text-center">
+    <ion-button (click)="onSaveButtonClick()">Save
+    </ion-button>
+  </div>
+</ion-card>

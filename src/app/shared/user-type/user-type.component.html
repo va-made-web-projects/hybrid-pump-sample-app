@@ -1,0 +1,7 @@
+<ion-label>User Type: {{ userType }}</ion-label>
+<ion-item>
+
+  <ion-toggle aria-label="Is Admin" [(ngModel)]="isAdmin" (ionChange)="setUserType()">
+  Is Admin</ion-toggle>
+</ion-item>
+

@@ -1,19 +1,17 @@
 <div>
-  <h2>Page Data Reader</h2>
-  <ion-button (click)="readPageData()">Read Page Data</ion-button>
-
-  <div *ngIf="currentPage !== null">
-    <h3>Current Page: {{ currentPage }}</h3>
-  </div>
-
-  <div *ngIf="pageDataService.progress() < 1">
-    <ion-progress-bar
-    *ngIf="currentPage !== null"
-    [value]="pageDataService.progress()"
-    class="custom-progress-bar"
-    ></ion-progress-bar>
-  </div>
-
+  <hr>
+  <ion-item>
+    <ion-label>Page Data Reader</ion-label>
+    <ion-button (click)="onReadPageData()">Refresh Page Data</ion-button>
+  </ion-item>
+  <ion-item *ngIf="currentPage !== null">
+    <ion-label>Current Time Recorded: </ion-label>
+    <ion-badge>{{ formatTime(currentPage) }}</ion-badge>
+  </ion-item>
+  <ion-item *ngIf="currentPage !== null">
+    <ion-label>Total Pages: </ion-label>
+    <ion-badge>{{ currentPage }}</ion-badge>
+  </ion-item>
   <!-- <div>
     <ion-accordion-group>
       <ion-accordion *ngFor="let data of groupedData | keyvalue">
@@ -33,8 +31,8 @@
     </ion-accordion-group>
   </div> -->
 
-  <div *ngIf="allPagesData.length > 0">
-    <h3>Pages Data:</h3>
+  <div *ngIf="first_page.length > 0">
+    <h3>First Page Data:</h3>
     <table>
       <thead>
         <tr>
@@ -48,7 +46,34 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let page of allPagesData">
+        <tr *ngFor="let page of first_page">
+          <td>{{ page.timestamp | date: "yyyy-MM-dd HH:mm:ss" }}</td>
+          <td>{{ page.sensorValue | millivoltsToInches }}</td>
+          <td>{{ page.isMotorRunning ? "Running" : "Stopped" }}</td>
+          <td>{{ page.pumpMode }}</td>
+          <td>{{ page.batteryReading }}</td>
+          <td>{{ page.highThreshold | millivoltsToInches }}</td>
+          <td>{{ page.lowThreshold | millivoltsToInches }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div *ngIf="last_page.length > 0">
+    <h3>Last Page Data:</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Page Number</th>
+          <th>Data</th>
+          <th>Motor</th>
+          <th>Pump Mode</th>
+          <th>Battery</th>
+          <th>Low Threshold</th>
+          <th>High Threshold</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let page of last_page">
           <td>{{ page.timestamp | date: "yyyy-MM-dd HH:mm:ss" }}</td>
           <td>{{ page.sensorValue | millivoltsToInches }}</td>
           <td>{{ page.isMotorRunning ? "Running" : "Stopped" }}</td>

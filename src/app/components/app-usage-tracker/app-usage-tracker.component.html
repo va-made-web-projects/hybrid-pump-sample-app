@@ -1,9 +1,12 @@
 <ion-card>
-  <ion-card-header>
-    <ion-card-title>App Usage Time</ion-card-title>
-  </ion-card-header>
+  <ion-item-divider color="primary">
+    <ion-label>App Usage Time</ion-label>
+    <app-info-button class="ion-no-padding"
+        popoverContent="Displays the total time the app has been used">
+    </app-info-button>
+  </ion-item-divider>
   <ion-card-content>
     <p>Total Usage Time: {{ usageTime }}</p>
-    <ion-button (click)="resetUsageTime()">Reset Usage Time</ion-button>
+    <ion-button color="warning" (click)="resetUsageTime()">Reset Usage Time</ion-button>
   </ion-card-content>
 </ion-card>

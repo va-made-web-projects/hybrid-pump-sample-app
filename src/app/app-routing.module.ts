@@ -11,10 +11,6 @@ const routes: Routes = [
     loadChildren: () => import('./pages/pump/pump.module').then( m => m.PumpPageModule)
   },
   {
-    path: 'controls',
-    loadChildren: () => import('./pages/controls/controls.module').then( m => m.ControlsPageModule)
-  },
-  {
     path: 'settings',
     loadChildren: () => import('./pages/settings/settings.module').then( m => m.SettingsPageModule)
   },

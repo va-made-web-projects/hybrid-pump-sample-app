@@ -1,0 +1,16 @@
+.modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+ion-card {
+  width: 300px;
+  max-width: 90%;
+}
+
+ion-badge {
+  margin-left: 10px;
+  font-size: x-large;
+}

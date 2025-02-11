@@ -36,7 +36,7 @@ export class CoreBluetoothService {
 
   initialize() {
     try {
-      BleClient.initialize().then(
+      BleClient.initialize({ androidNeverForLocation: true }).then(
         () => this.bleEnabledSignal.set(true),
         () => this.bleEnabledSignal.set(false)
       );

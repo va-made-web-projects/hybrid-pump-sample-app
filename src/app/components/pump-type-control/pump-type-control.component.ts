@@ -23,19 +23,6 @@ export class PumpTypeControlComponent  implements OnInit {
     { value: 2, label: 'Diagnostic', color: 'warning' }
   ];
 
-  setPumpState(value: number) {
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.pumpStateCharUUID, this.setPumpStateDataView(value), BLUETOOTH_UUID.pressureServiceUUID)
-  }
-
-
-  setPumpStateDataView(num:number):DataView {
-    const buffer = new ArrayBuffer(1);
-    const dataView = new DataView(buffer);
-
-    // Set the value of the DataView to the number 100
-    dataView.setUint8(0, num);
-    return dataView
-  }
 
   ngOnInit() {
     if (this.pumpType === 'user') {

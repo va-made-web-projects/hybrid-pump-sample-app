@@ -2,6 +2,7 @@ import { PageDataService } from 'src/app/services/page-data.service';
 import { Component, OnInit } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { BluetoothService } from 'src/app/services/bluetooth.service';
 
 @Component({
   selector: 'app-data',
@@ -12,34 +13,38 @@ export class DataPage implements OnInit {
   // spoof a random that will be replaced by the real data
   data : { date: string, value: number }[] = [];
   groupedData: Record<string, { date: string; value: number; }[]> = {};
-  constructor(private pageDataService: PageDataService) {
+  isDownloading: boolean = false;
+  constructor(public pageDataService: PageDataService, public bluetoothService: BluetoothService) {
    }
 
-  generateSpoofedData(numEntries: number): { date: string, value: number }[] {
-    const data = [];
-    const startTime = new Date();
-
-    for (let i = 0; i < numEntries; i++) {
-      const currentTime = new Date(startTime.getTime() + i * 1000); // Increment time by 1 second
-      const formattedDate = currentTime.toISOString().replace('T', ' ').replace('Z', '');
-      const value = Math.floor(Math.random() * 21); // Random number between 0 and 20
-
-      data.push({
-        date: formattedDate,
-        value: value
-      });
-    }
-
-    return data;
-  }
-
   ngOnInit() {
-    // this.data = this.generateSpoofedData(2000);
     // this.groupedData = this.groupDataByMinute(this.data);
     // console.log(this.groupedData);
   }
 
+  async onTestFullDownload() {
+    await this.pageDataService.readFullFlash();
+  }
+
+  async downloadPageData() {
+    this.isDownloading = true;
+    console.log('Reading page data');
+    try {
+      // Read current page number
+      const currentPage = await this.pageDataService.readCurrentPage();
+
+      // Read all pages from 0 to current page
+      const allPagesData = await this.pageDataService.readAllPages().finally(() => {
+        this.isDownloading = false;
+      });
+
+    } catch (error) {
+      console.error('Error reading page data:', error);
+    }
+  }
+
   async download() {
+    await this.downloadPageData()
     // Ask the user where to save the file
     const saveLocation = await this.promptSaveLocation();
 

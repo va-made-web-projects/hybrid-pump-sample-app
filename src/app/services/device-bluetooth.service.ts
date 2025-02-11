@@ -13,25 +13,6 @@ export class DeviceBluetoothService extends CoreBluetoothService {
   pumpStateSignal = signal(0);
   errorStateSignal = signal(0);
 
-  async onReadPumpState() {
-    this.pumpStateSignal.set(1);
-    try {
-      const readData = await BleClient.read(
-        this.deviceIDSignal(),
-        BLUETOOTH_UUID.pressureServiceUUID,
-        BLUETOOTH_UUID.pumpStateCharUUID
-      );
-
-      if (readData.byteLength > 0) {
-        return this.parseInt8DataReading(readData);
-      }
-      return null;
-    } catch (error) {
-      this.handleReadError(error);
-      return null;
-    }
-  }
-
   async onReadErrorState() {
     this.errorStateSignal.set(0);
     try {

@@ -23,10 +23,10 @@ interface SensorData {
   providedIn: 'root'
 })
 export class PageDataService {
-  constructor(private bluetoothService: BluetoothService) {}
+  constructor(public bluetoothService: BluetoothService) {}
 
-  progress = signal(0);
   allPageData = signal<SensorData[]>([]);
+  singlePageData = signal<SensorData[]>([]);
 
   // Read current page number from device
   async readCurrentPage(): Promise<number | null> {
@@ -49,6 +49,22 @@ export class PageDataService {
     }
   }
 
+
+  async readFullFlash(): Promise<SensorData[] | null> {
+    try {
+      this.bluetoothService.onNotifyFlashData();
+      this.bluetoothService.onReadFlashData();
+      return null
+
+
+      // return Array.from(this.bluetoothService.parseDataReading(readData));
+    } catch (error) {
+        console.error('Error reading full flash data:', error);
+      return null;
+    }
+  }
+
+
   // Read data for a specific page
   async readPageData(pageNumber: number): Promise<SensorData[] | null> {
     try {
@@ -67,12 +83,6 @@ export class PageDataService {
         BLUETOOTH_UUID.pageOffsetWriteCharUUID,
         pageBuffer
       );
-
-      // await this.bluetoothService.onWriteDataWithoutResponse(
-      //   BLUETOOTH_UUID.pageOffsetWriteCharUUID, // Add this UUID to your constants
-      //   pageBuffer,
-      //   BLUETOOTH_UUID.dataServiceUUID
-      // );
 
       // Read page data
       console.log(`Reading data for page ${pageNumber}`);
@@ -121,7 +131,27 @@ export class PageDataService {
   //   return results.filter(page => page !== null).flat() as SensorData[];
   // }
 
+  async readSinglePage(page: number): Promise<SensorData[]> {
+    const currentPage = await this.readCurrentPage();
+    if (currentPage === null) {
+      console.error('Could not determine current page');
+      return [];
+    }
 
+    if (page > currentPage) {
+      console.error('Page number is greater than current page');
+      return [];
+    }
+
+    console.log(`Reading single page ${page}`);
+
+
+    const pageData = await this.readPageData(page);
+
+    const transformedData = transformTimestamps(pageData!);
+    // this.singlePageData.set(transformedData);
+    return transformedData;
+  }
 
   // Read all pages from 0 to current page
   async readAllPages(): Promise<SensorData[]> {
@@ -134,7 +164,7 @@ export class PageDataService {
     const pageData: SensorData[] = [];
 
     for (let page = 0; page < currentPage; page++) {
-      this.progress.set(page / (currentPage - 1));
+      this.bluetoothService.progress.set(page / (currentPage - 1));
       console.log(`Reading page ${page}`);
       const pageContent = await this.readPageData(page);
       if (pageContent !== null) {
@@ -146,36 +176,36 @@ export class PageDataService {
     return transformedData;
   }
 
-  async readAllFlashData(): Promise<Uint8Array | null> {
-    try {
-      const totalSize = 16 * 1024 * 1024; // 16 MB
-      const chunkSize = 240; // MTU-optimized chunk size
-      const completeData = new Uint8Array(totalSize);
-      let currentOffset = 0;
+//   async readAllFlashData(): Promise<Uint8Array | null> {
+//     try {
+//       const totalSize = 16 * 1024 * 1024; // 16 MB
+//       const chunkSize = 240; // MTU-optimized chunk size
+//       const completeData = new Uint8Array(totalSize);
+//       let currentOffset = 0;
 
-      while (currentOffset < totalSize) {
-        const remainingBytes = totalSize - currentOffset;
-        const readSize = Math.min(chunkSize, remainingBytes);
-        // console.log(`Reading ${readSize} bytes at offset ${currentOffset}`);
+//       while (currentOffset < totalSize) {
+//         const remainingBytes = totalSize - currentOffset;
+//         const readSize = Math.min(chunkSize, remainingBytes);
+//         // console.log(`Reading ${readSize} bytes at offset ${currentOffset}`);
 
-        const value = await BleClient.read(
-          this.bluetoothService.deviceIDSignal(),
-          BLUETOOTH_UUID.dataTransferServiceUUID,
-          BLUETOOTH_UUID.dataTransferCharUUID
-        );
+//         const value = await BleClient.read(
+//           this.bluetoothService.deviceIDSignal(),
+//           BLUETOOTH_UUID.dataTransferServiceUUID,
+//           BLUETOOTH_UUID.dataTransferCharUUID
+//         );
 
-        const chunkData = new Uint8Array(value.buffer);
-        completeData.set(chunkData, currentOffset);
+//         const chunkData = new Uint8Array(value.buffer);
+//         completeData.set(chunkData, currentOffset);
 
-        currentOffset += readSize;
-      }
+//         currentOffset += readSize;
+//       }
 
-      return completeData;
-    } catch (error) {
-      console.error('Error reading flash data:', error);
-      return null;
-    }
-  }
+//       return completeData;
+//     } catch (error) {
+//       console.error('Error reading flash data:', error);
+//       return null;
+//     }
+//   }
 }
 
 // Function to transform timestamps (multiplying by 1000)

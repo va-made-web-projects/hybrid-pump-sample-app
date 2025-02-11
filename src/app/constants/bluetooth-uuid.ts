@@ -14,6 +14,7 @@ export const BLUETOOTH_UUID = {
   errorStateCharUUID:'0000bc43-cc7a-482a-984a-7f2ed5b3e58f',
   totalPagesCharUUID: '0000bc44-cc7a-482a-984a-7f2ed5b3e58f',
   writingDataCharUUID: '0000bc45-cc7a-482a-984a-7f2ed5b3e58f',
+  resetNVSDataCharUUID: '0000bc46-cc7a-482a-984a-7f2ed5b3e58f',
 
   batteryServiceUUID: '0000180f-0000-1000-8000-00805f9b34fb',
   batteryLevelCharUUID: '00002a19-0000-1000-8000-00805f9b34fb',
@@ -25,6 +26,7 @@ export const BLUETOOTH_UUID = {
   pageDataCharUUID: '0000dc20-cc7a-482a-984a-7f2ed5b3e58f',
   pageOffsetWriteCharUUID: '0000dc21-cc7a-482a-984a-7f2ed5b3e58f',
   currentPageCharUUID: '0000dc22-cc7a-482a-984a-7f2ed5b3e58f',
+  readFullFlashCharUUID: '0000dc23-cc7a-482a-984a-7f2ed5b3e58f',
 
   timeServiceUUID: '00001805-0000-1000-8000-00805f9b34fb',
   currentTimeCharUUID: '00002a2b-0000-1000-8000-00805f9b34fb',
@@ -32,5 +34,7 @@ export const BLUETOOTH_UUID = {
   dataTransferServiceUUID: '0000181c-0000-1000-8000-00805f9b34fb',
   dataTransferCharUUID: '00002b3d-0000-1000-8000-00805f9b34fb',
 
+  maintenanceTimerCharUUID: '0000fe44-cc7a-482a-984a-7f2ed5b3e58f',
+  normalTimerCharUUID: '0000fe45-cc7a-482a-984a-7f2ed5b3e58f',
 
 }

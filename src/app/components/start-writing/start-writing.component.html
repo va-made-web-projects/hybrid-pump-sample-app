@@ -1,7 +1,10 @@
 <ion-card>
-  <ion-card-header>
-    <ion-card-title>Writing Data Status</ion-card-title>
-  </ion-card-header>
+  <ion-item-divider color="primary">
+    <ion-label>Writing Data Status</ion-label>
+    <app-info-button class="ion-no-padding"
+      popoverContent="Start or stop recording data">
+    </app-info-button>
+  </ion-item-divider>
   <ion-card-content>
     <ion-item>
       <ion-badge slot="end" [color]="isWriting ? 'success' : 'danger'">

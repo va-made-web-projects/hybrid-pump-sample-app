@@ -3,6 +3,9 @@
     <ion-card-subtitle>Raw Sensor Reading</ion-card-subtitle>
     <ion-card-title>{{bluetoothService.currentPressureSignal()}}</ion-card-title>
   </ion-card-header>
+  <app-info-button class="ion-no-padding"
+      popoverContent="Graph of the pump sensor data">
+  </app-info-button>
   <ion-card-content>
     <div>
       <app-pressure-graph></app-pressure-graph>

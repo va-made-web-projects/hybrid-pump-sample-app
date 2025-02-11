@@ -1,18 +1,29 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>data</ion-title>
+    <ion-title>Data</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">data</ion-title>
+      <ion-title size="large">Data</ion-title>
     </ion-toolbar>
   </ion-header>
-  <div class="ion-text-center">
-    <ion-button (click)="download()" >Download</ion-button>
+  <div class="ion-text-center" *ngIf="!isDownloading">
+    <ion-button (click)="download()">Download Data</ion-button>
   </div>
+  <ion-card *ngIf="isDownloading">
+    <ion-card-content>
+    <ion-label>Downloading...</ion-label>
+    <div *ngIf="bluetoothService.progress() < 1">
+      <ion-progress-bar
+      [value]="bluetoothService.progress()"
+      class="custom-progress-bar"
+      ></ion-progress-bar>
+    </div>
+    </ion-card-content>
+  </ion-card>
 
   <div>
     <app-page-data-reader></app-page-data-reader>
