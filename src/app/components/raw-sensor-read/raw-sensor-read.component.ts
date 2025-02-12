@@ -1,7 +1,5 @@
-import { Component, NgZone, OnDestroy, OnInit, signal } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
-import { Subscription, take } from 'rxjs';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { BluetoothNotificationService } from 'src/app/services/bluetooth-notification.service';
 
 @Component({
   selector: 'app-raw-sensor-read',
@@ -15,7 +13,7 @@ export class RawSensorReadComponent  implements OnInit, OnDestroy {
 
 
   constructor(
-    public bluetoothService: BluetoothService) {
+    public bluetoothNotifciationService: BluetoothNotificationService) {
      }
 
   ngOnDestroy(): void {

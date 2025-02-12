@@ -1,10 +1,10 @@
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { BluetoothConnectionService } from './../../services/bluetooth-connection.service';
 import { DeviceSettingsService } from '../../services/device-settings.service';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Subscription, take } from 'rxjs';
-import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
-import { ConversionsService } from 'src/app/services/conversions.service';
 import { AlertService } from 'src/app/services/alert.service';
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
+import { BluetoothNotificationService } from 'src/app/services/bluetooth-notification.service';
 
 @Component({
   selector: 'app-pump',
@@ -28,14 +28,15 @@ export class PumpPage implements OnInit, OnDestroy {
 
   constructor(
     private deviceSettingsService: DeviceSettingsService,
-    public bluetoothService: BluetoothService,
+    private bluetoothConnectionService: BluetoothConnectionService,
+    public bluetoothControlService: BluetoothControlsService,
+    public bluetoothNotificationService: BluetoothNotificationService,
     private alertService: AlertService
   ) {
   }
 
   ngOnInit() {
-    this.alertSignal = this.bluetoothService.alertTypeSignal;
-    this.debug = this.bluetoothService.debug;
+    this.alertSignal = this.bluetoothNotificationService.alertTypeSignal;
 
     // can get from preferences
     this.deviceSettingsService.setState({
@@ -49,20 +50,21 @@ export class PumpPage implements OnInit, OnDestroy {
       sn: "1234",
       vn: "0.0.1"
     });
-    this.isConnecting = this.bluetoothService.isConnecting;
-    this.connectionSub = this.bluetoothService.connectionData.subscribe(
+    this.isConnecting = this.bluetoothConnectionService.isConnecting;
+    this.connectionSub = this.bluetoothConnectionService.connectionData.subscribe(
       data => {
+        const deviceID = this.bluetoothConnectionService.deviceIDSignal()
         this.connected = data
         if (this.connected) {
           console.log("connected")
-          this.bluetoothService.updateDeviceState(this.deviceSettingsService);
+          this.bluetoothControlService.updateDeviceState(deviceID, this.deviceSettingsService);
           this.updatePumpState();
               setInterval(() => {
                 this.updatePumpState();
               }, 1000)
 
 
-              this.bluetoothService.onReadErrorState().then(
+              this.bluetoothControlService.onReadErrorState(deviceID).then(
                 errorState => {
                   console.log("ERROR STATE", errorState)
                     if (errorState) {
@@ -81,7 +83,8 @@ export class PumpPage implements OnInit, OnDestroy {
   }
 
   updatePumpState() {
-    this.bluetoothService.onReadPumpState().then(
+    const deviceID = this.bluetoothConnectionService.deviceIDSignal()
+    this.bluetoothControlService.onReadPumpState(deviceID).then(
       data => {
         // console.log(data)
         if (data == 0) {

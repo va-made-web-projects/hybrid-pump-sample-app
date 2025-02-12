@@ -1,6 +1,9 @@
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { BluetoothUtils } from './../../utils/bluetooth-utils';
 import { Component, OnInit } from '@angular/core';
 import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
+import { BluetoothConnectionService } from 'src/app/services/bluetooth-connection.service';
+import { ParseDataUtils } from 'src/app/utils/parse-data-utils';
 
 @Component({
   selector: 'app-limit-timer',
@@ -9,26 +12,34 @@ import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
 })
 export class LimitTimerComponent  implements OnInit {
 
-  constructor(public bluetoothService: BluetoothService) { }
+  constructor(public bluetoothControlsService: BluetoothControlsService,
+    private bluetoothConnectionService: BluetoothConnectionService,
+  ) { }
+
+  readMotor() {
+    const deviceID = this.bluetoothConnectionService.deviceIDSignal();
+    this.bluetoothControlsService.onReadMotorRunTimeLimit(deviceID);
+  }
 
   ngOnInit() {
-    this.bluetoothService.onReadMotorRunTimeLimit();
+    this.readMotor();
   }
 
   ionViewWillEnter(){
     console.log("ionViewWillEnter");
-    this.bluetoothService.onReadMotorRunTimeLimit();
+    this.readMotor();
   }
 
   rangeChange(event: any) {
     // console.log(this.device());
-    this.bluetoothService.motorRunTimeLimitSignal.set(event.detail.value);
+    this.bluetoothControlsService.motorRunTimeLimitSignal.set(event.detail.value);
   }
 
   onSaveButtonClick() {
     // console.log("save button clicked");
-    const runTimeView = this.bluetoothService.setPumpStateDataView(this.bluetoothService.motorRunTimeLimitSignal());
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.normalTimerCharUUID, runTimeView, BLUETOOTH_UUID.pressureServiceUUID)
+    const runTimeView = ParseDataUtils.setPumpStateDataView(this.bluetoothControlsService.motorRunTimeLimitSignal());
+    const deviceID = this.bluetoothConnectionService.deviceIDSignal();
+    BluetoothUtils.onWriteDataWithoutResponse(deviceID, BLUETOOTH_UUID.normalTimerCharUUID, runTimeView, BLUETOOTH_UUID.pressureServiceUUID)
   }
 
 }

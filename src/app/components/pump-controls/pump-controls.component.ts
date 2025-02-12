@@ -1,12 +1,11 @@
-import { SpoofDataService } from 'src/app/services/spoof-data.service';
 import {
   DeviceSettingsService,
-  DeviceState,
 } from '../../services/device-settings.service';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { Component, OnInit } from '@angular/core';
 import { ConversionsService } from 'src/app/services/conversions.service';
 import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
+import { BluetoothUtils } from 'src/app/utils/bluetooth-utils';
+import { BluetoothConnectionService } from 'src/app/services/bluetooth-connection.service';
 
 @Component({
   selector: 'app-pump-controls',
@@ -22,8 +21,7 @@ export class PumpControlsComponent implements OnInit {
 
   constructor(
     private deviceSettingsService: DeviceSettingsService,
-    private spoofDataService: SpoofDataService,
-    public bluetoothService: BluetoothService
+    public bluetoothConnectionService: BluetoothConnectionService
   ) {}
 
   ngOnInit() {
@@ -51,8 +49,8 @@ export class PumpControlsComponent implements OnInit {
     // console.log("save button clicked");
     const lowDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('lowerThresh')()));
     const highDataView = this.setDataView( ConversionsService.inchesToMillivolts(this.deviceSettingsService.select('upperThresh')()));
-
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.lowThreshCharUUID, lowDataView, BLUETOOTH_UUID.pressureServiceUUID)
-    this.bluetoothService.onWriteDataWithoutResponse(BLUETOOTH_UUID.highThreshCharUUID, highDataView, BLUETOOTH_UUID.pressureServiceUUID)
+    const deviceID =  this.bluetoothConnectionService.deviceIDSignal();
+    BluetoothUtils.onWriteDataWithoutResponse(deviceID, BLUETOOTH_UUID.lowThreshCharUUID, lowDataView, BLUETOOTH_UUID.pressureServiceUUID)
+    BluetoothUtils.onWriteDataWithoutResponse(deviceID, BLUETOOTH_UUID.highThreshCharUUID, highDataView, BLUETOOTH_UUID.pressureServiceUUID)
   }
 }

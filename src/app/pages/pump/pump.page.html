@@ -3,7 +3,7 @@
     <ion-title>Hybrid Pump</ion-title>
 
     <ion-buttons slot="end">
-      <app-battery-level [value]="bluetoothService.batteryLevelSignal()"></app-battery-level>
+      <app-battery-level [value]="bluetoothNotificationService.batteryLevelSignal()"></app-battery-level>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>

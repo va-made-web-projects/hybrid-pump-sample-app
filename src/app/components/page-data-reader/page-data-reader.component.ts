@@ -1,19 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { PageDataService } from 'src/app/services/page-data.service';
+import SensorData from 'src/app/types/sensor-type.interface';
 
 interface PageData {
   pageNumber: number;
   data: number[];
-}
-
-interface SensorData {
-  timestamp: number;
-  sensorValue: number;
-  isMotorRunning: boolean;
-  pumpMode: number;
-  batteryReading: number;
-  lowThreshold: number;
-  highThreshold: number;
 }
 
 @Component({

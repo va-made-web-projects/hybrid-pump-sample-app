@@ -1,13 +1,11 @@
 import { DeviceSettingsService } from 'src/app/services/device-settings.service';
-import { ConversionsService } from 'src/app/services/conversions.service';
-import { Input, OnDestroy, ViewChild } from '@angular/core';
+import { OnDestroy, ViewChild } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { Chart, ChartOptions, registerables, Plugin } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { ChartConfiguration, ChartEvent, ChartType } from 'chart.js';
-import { Subscription } from 'rxjs';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { ChartConfiguration, ChartType } from 'chart.js';
 import  ChartAnnotation from 'chartjs-plugin-annotation';
+import { BluetoothNotificationService } from 'src/app/services/bluetooth-notification.service';
 
 
 @Component({
@@ -47,7 +45,8 @@ export class PressureGraphComponent  implements OnInit, OnDestroy {
   plugins: any = [
 
   ]
-  constructor(private bluetoothService: BluetoothService, private deviceSettingsService: DeviceSettingsService) {
+  constructor(private bluetoothNotificationService: BluetoothNotificationService,
+    private deviceSettingsService: DeviceSettingsService) {
     Chart.register(...registerables, ChartAnnotation);
 
   }
@@ -103,7 +102,7 @@ export class PressureGraphComponent  implements OnInit, OnDestroy {
           this.lineChartData.datasets[0].data.shift();
           this.lineChartData.labels?.shift();
         }
-        this.lineChartData.datasets[0].data.push(this.bluetoothService.currentPressureSignal());
+        this.lineChartData.datasets[0].data.push(this.bluetoothNotificationService.currentPressureSignal());
         this.lineChartData.labels?.push(count);
         count++
         if (this.chart && this.chart.chart) {

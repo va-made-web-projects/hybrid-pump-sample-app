@@ -1,9 +1,8 @@
+import { BluetoothConnectionService } from './../../services/bluetooth-connection.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { SwitchPumpTypeComponent } from 'src/app/modal/switch-pump-type/switch-pump-type.component';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
-
-
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
 
 @Component({
   selector: 'app-pump-status',
@@ -14,7 +13,11 @@ import { BluetoothService } from 'src/app/services/bluetooth.service';
 export class PumpStatusComponent  implements OnInit {
   @Input({ required: true }) pumpStatus!: string;
 
-  constructor(private modalController: ModalController, private bluetoothService: BluetoothService) { }
+  constructor(
+    private modalController: ModalController,
+    private bluetoothControlService: BluetoothControlsService,
+    private bluetoothConnectionService: BluetoothConnectionService,
+  ) { }
 
   async openModal() {
     if (!this.pumpStatus) return
@@ -44,7 +47,8 @@ export class PumpStatusComponent  implements OnInit {
     const { data } = await modal.onDidDismiss();
     if (data === true) {
       console.log('OK was pressed');
-      this.bluetoothService.setPumpState(newPumpNumber)
+      const deviceID = this.bluetoothConnectionService.deviceIDSignal()
+      this.bluetoothControlService.setPumpState(deviceID, newPumpNumber)
 
     } else {
       console.log('Cancel was pressed');

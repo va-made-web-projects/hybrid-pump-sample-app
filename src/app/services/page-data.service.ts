@@ -1,8 +1,10 @@
 import { Injectable, signal } from '@angular/core';
-import { BluetoothService } from './bluetooth.service';
 import { BLUETOOTH_UUID } from '../constants/bluetooth-uuid';
-import { firstValueFrom } from 'rxjs';
 import { BleClient } from '@capacitor-community/bluetooth-le';
+import { ParseDataUtils } from '../utils/parse-data-utils';
+import { FlashDataUtils } from '../utils/flash-data-utils';
+import { BluetoothConnectionService } from './bluetooth-connection.service';
+import { BluetoothDataService } from './bluetooth-data.service';
 
 interface PageData {
   pageNumber: number;
@@ -23,7 +25,10 @@ interface SensorData {
   providedIn: 'root'
 })
 export class PageDataService {
-  constructor(public bluetoothService: BluetoothService) {}
+  constructor(
+    public bluetoothConnectionService: BluetoothConnectionService,
+    private bluetoothDataService: BluetoothDataService
+  ) {}
 
   allPageData = signal<SensorData[]>([]);
   singlePageData = signal<SensorData[]>([]);
@@ -32,34 +37,19 @@ export class PageDataService {
   async readCurrentPage(): Promise<number | null> {
     try {
       const readData = await BleClient.read(
-        this.bluetoothService.deviceIDSignal(),
+        this.bluetoothConnectionService.deviceIDSignal(),
         BLUETOOTH_UUID.dataServiceUUID, // Adjust UUID as per your device's configuration
         BLUETOOTH_UUID.currentPageCharUUID // Add this UUID to your constants
       );
 
       if (readData.byteLength > 0) {
-        return this.bluetoothService.parseInt32DataReading(readData);
+        return ParseDataUtils.parseInt32DataReading(readData);
       } else {
         console.log('No page number received from device');
         return null;
       }
     } catch (error) {
       console.error('Error reading page number:', error);
-      return null;
-    }
-  }
-
-
-  async readFullFlash(): Promise<SensorData[] | null> {
-    try {
-      this.bluetoothService.onNotifyFlashData();
-      this.bluetoothService.onReadFlashData();
-      return null
-
-
-      // return Array.from(this.bluetoothService.parseDataReading(readData));
-    } catch (error) {
-        console.error('Error reading full flash data:', error);
       return null;
     }
   }
@@ -78,7 +68,7 @@ export class PageDataService {
       console.log(`Page offset buffer:`, pageBuffer);
 
       await BleClient.write(
-        this.bluetoothService.deviceIDSignal(),
+        this.bluetoothConnectionService.deviceIDSignal(),
         BLUETOOTH_UUID.dataServiceUUID,
         BLUETOOTH_UUID.pageOffsetWriteCharUUID,
         pageBuffer
@@ -87,7 +77,7 @@ export class PageDataService {
       // Read page data
       console.log(`Reading data for page ${pageNumber}`);
       const readData = await BleClient.read(
-        this.bluetoothService.deviceIDSignal(),
+        this.bluetoothConnectionService.deviceIDSignal(),
         BLUETOOTH_UUID.dataServiceUUID,
         BLUETOOTH_UUID.pageDataCharUUID // Add this UUID to your constants
       );
@@ -95,7 +85,7 @@ export class PageDataService {
       if (readData.byteLength > 0) {
         console.log(`Page ${pageNumber} data:`, readData);
         // Assuming 16-bit integers, adjust parsing as needed
-        return Array.from(this.bluetoothService.parseDataReading(readData));
+        return Array.from(FlashDataUtils.parseDataReading(readData));
       } else {
         console.log(`No data received for page ${pageNumber}`);
         return null;
@@ -164,7 +154,7 @@ export class PageDataService {
     const pageData: SensorData[] = [];
 
     for (let page = 0; page < currentPage; page++) {
-      this.bluetoothService.progress.set(page / (currentPage - 1));
+      this.bluetoothDataService.progress.set(page / (currentPage - 1));
       console.log(`Reading page ${page}`);
       const pageContent = await this.readPageData(page);
       if (pageContent !== null) {

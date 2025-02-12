@@ -9,7 +9,7 @@
   <ion-list>
     <ion-item>
       <ion-label>Current Pump Status</ion-label>
-      <ng-container [ngSwitch]="bluetoothService.pumpStateSignal()">
+      <ng-container [ngSwitch]="bluetoothControlService.pumpStateSignal()">
         <ion-badge *ngSwitchCase="0" class="badge" color="success">Hybrid</ion-badge>
         <ion-badge *ngSwitchCase="1" class="badge" color="danger">Silent</ion-badge>
         <ion-badge *ngSwitchCase="2" class="badge" color="warning">Diagnostic</ion-badge>
@@ -19,9 +19,9 @@
     <ion-button class="ion-margin"
       *ngFor="let type of types"
       [color]="type.color"
-      [disabled]="type.value === bluetoothService.pumpStateSignal()"
-      [class.inactive]="type.value === bluetoothService.pumpStateSignal()"
-      (click)="bluetoothService.setPumpState(type.value)">
+      [disabled]="type.value === bluetoothControlService.pumpStateSignal()"
+      [class.inactive]="type.value === bluetoothControlService.pumpStateSignal()"
+      (click)="setPumpState(type.value)">
       {{ type.label }}
     </ion-button>
   </ion-list>

@@ -2,7 +2,7 @@ import { PageDataService } from 'src/app/services/page-data.service';
 import { Component, OnInit } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { BluetoothDataService } from 'src/app/services/bluetooth-data.service';
 
 @Component({
   selector: 'app-data',
@@ -14,16 +14,12 @@ export class DataPage implements OnInit {
   data : { date: string, value: number }[] = [];
   groupedData: Record<string, { date: string; value: number; }[]> = {};
   isDownloading: boolean = false;
-  constructor(public pageDataService: PageDataService, public bluetoothService: BluetoothService) {
+  constructor(public pageDataService: PageDataService, public bluetoothDataService: BluetoothDataService) {
    }
 
   ngOnInit() {
     // this.groupedData = this.groupDataByMinute(this.data);
     // console.log(this.groupedData);
-  }
-
-  async onTestFullDownload() {
-    await this.pageDataService.readFullFlash();
   }
 
   async downloadPageData() {

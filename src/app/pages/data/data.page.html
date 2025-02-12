@@ -16,9 +16,9 @@
   <ion-card *ngIf="isDownloading">
     <ion-card-content>
     <ion-label>Downloading...</ion-label>
-    <div *ngIf="bluetoothService.progress() < 1">
+    <div *ngIf="bluetoothDataService.progress() < 1">
       <ion-progress-bar
-      [value]="bluetoothService.progress()"
+      [value]="bluetoothDataService.progress()"
       class="custom-progress-bar"
       ></ion-progress-bar>
     </div>

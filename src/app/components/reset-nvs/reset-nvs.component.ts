@@ -1,6 +1,8 @@
+import { BluetoothConnectionService } from './../../services/bluetooth-connection.service';
+import { DeviceSettingsService } from './../../services/device-settings.service';
 import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
 
 @Component({
   selector: 'app-reset-nvs',
@@ -9,7 +11,10 @@ import { BluetoothService } from 'src/app/services/bluetooth.service';
 })
 export class ResetNvsComponent  implements OnInit {
 
-  constructor(private bluetoothService: BluetoothService, private toastController: ToastController) { }
+  constructor(private bluetoothControlService: BluetoothControlsService,
+    private bluetoothConnectionService: BluetoothConnectionService,
+    private toastController: ToastController,
+    private deviceSettingsService: DeviceSettingsService) { }
 
 
   ngOnInit() {}
@@ -23,7 +28,8 @@ export class ResetNvsComponent  implements OnInit {
       },
       handler: () => {
         console.log('Reset clicked');
-        this.bluetoothService.writeNVSResetData(true);
+        const deviceID = this.bluetoothConnectionService.deviceIDSignal();
+        this.bluetoothControlService.writeNVSResetData(deviceID, true, this.deviceSettingsService);
         this.presentToast();
 
       }

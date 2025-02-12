@@ -1,8 +1,9 @@
+import { BluetoothConnectionService } from './../../services/bluetooth-connection.service';
 import { Component, OnInit } from '@angular/core';
 import { ToastController } from '@ionic/angular';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
 import { PopoverController } from '@ionic/angular';
 import { TimeNotSyncedPopoverComponent } from '../time-not-synced-popover/time-not-synced-popover.component';
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
 
 
 @Component({
@@ -17,7 +18,8 @@ export class BluetoothTimeComponent implements OnInit {
   isTimeSynced: boolean = true;
 
   constructor(
-    private bluetoothService: BluetoothService,
+    private bluetoothControlsService: BluetoothControlsService,
+    private bluetoothConnectionService: BluetoothConnectionService,
     private toastController: ToastController,
     private popoverController: PopoverController) {}
 
@@ -50,7 +52,8 @@ export class BluetoothTimeComponent implements OnInit {
   async onReadTime(event: any) {
     try {
       // Replace with your actual service UUID and characteristic UUID
-      const data = await this.bluetoothService.readTimestamp();
+      const deviceID = this.bluetoothConnectionService.deviceIDSignal();
+      const data = await this.bluetoothControlsService.readTimestamp(deviceID);
       this.bluetoothTime = new Date(new Date(data).getTime() * 1000);
       this.checkTimeDifference();
       if (!this.isTimeSynced) {
@@ -67,8 +70,9 @@ export class BluetoothTimeComponent implements OnInit {
     try {
       const timestamp = new Date().getTime();
       const timestampInSeconds = Math.floor(timestamp / 1000);
+      const deviceID = this.bluetoothConnectionService.deviceIDSignal();
 
-      await this.bluetoothService.writeTimestamp(timestampInSeconds);
+      await this.bluetoothControlsService.writeTimestamp(deviceID, timestampInSeconds);
       this.showToast('Time successfully written to Bluetooth device.');
     } catch (error) {
       this.showToast('Failed to write time to Bluetooth device.');

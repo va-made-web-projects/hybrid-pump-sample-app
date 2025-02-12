@@ -1,9 +1,10 @@
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { BluetoothConnectionService } from './../services/bluetooth-connection.service';
 import { Component, ViewChild } from '@angular/core';
 import { DeviceSettingsService } from '../services/device-settings.service';
 import { IonTabs } from '@ionic/angular';
 import { BLUETOOTH_UUID } from '../constants/bluetooth-uuid';
 import { UserTypeService } from '../services/user-type.service';
+import { BluetoothControlsService } from '../services/bluetooth-controls.service';
 
 @Component({
   selector: 'app-tabs',
@@ -16,7 +17,8 @@ export class TabsPage {
   userType = "user";
 
   constructor(
-    private bluetoothService: BluetoothService,
+    private bluetoothControlService: BluetoothControlsService,
+    private bluetoothConnectionService: BluetoothConnectionService,
     private deviceSettingsService: DeviceSettingsService,
     private userTypeService: UserTypeService
   ) {
@@ -34,10 +36,12 @@ export class TabsPage {
     // Call your function here
     console.log(`Tab changed!: ${currentTab}`);
     if (currentTab === 'admin') {
-      this.bluetoothService.updateDeviceState(this.deviceSettingsService);
-      this.bluetoothService.onReadThreshold(BLUETOOTH_UUID.lowThreshCharUUID);
-      this.bluetoothService.onReadThreshold(BLUETOOTH_UUID.highThreshCharUUID);
-      this.bluetoothService.onReadMotorRunTimeLimit();
+      const deviceID = this.bluetoothConnectionService.deviceIDSignal();
+      this.bluetoothControlService.onReadThreshold(deviceID, BLUETOOTH_UUID.lowThreshCharUUID);
+      this.bluetoothControlService.onReadThreshold(deviceID, BLUETOOTH_UUID.highThreshCharUUID);
+      this.bluetoothControlService.onReadMotorRunTimeLimit(deviceID);
+      this.bluetoothControlService.updateDeviceState(deviceID, this.deviceSettingsService);
+
     }
 
     this.userType = this.userTypeService.userType()!;

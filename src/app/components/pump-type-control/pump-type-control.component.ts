@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BLUETOOTH_UUID } from 'src/app/constants/bluetooth-uuid';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
+import { BluetoothConnectionService } from 'src/app/services/bluetooth-connection.service';
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
 
 @Component({
   selector: 'app-pump-type-control',
@@ -10,7 +10,11 @@ import { BluetoothService } from 'src/app/services/bluetooth.service';
 export class PumpTypeControlComponent  implements OnInit {
   @Input({ required: true }) pumpType!: string
   types: any[] = [];
-  constructor(public bluetoothService: BluetoothService) { }
+  constructor(
+    public bluetoothControlService: BluetoothControlsService,
+    private bluetoothConnectionService: BluetoothConnectionService
+
+  ) { }
 
   user_types = [
     { value: 0, label: 'Hybrid', color: 'success' },
@@ -30,5 +34,10 @@ export class PumpTypeControlComponent  implements OnInit {
     } else {
       this.types = this.admin_types
     }
+  }
+
+  setPumpState(type: number) {
+    const deviceID = this.bluetoothConnectionService.deviceIDSignal();
+    this.bluetoothControlService.setPumpState(deviceID, type);
   }
 }

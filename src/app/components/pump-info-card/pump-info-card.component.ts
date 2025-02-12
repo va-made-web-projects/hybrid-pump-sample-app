@@ -1,8 +1,9 @@
 import { Subscription } from 'rxjs';
 import { DeviceSettingsService } from '../../services/device-settings.service';
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
-import { BluetoothService } from 'src/app/services/bluetooth.service';
-import { MillisecondsToTimePipe } from 'src/pipes/milliseconds-to-time.pipe';
+import { Component, Input, OnDestroy, OnInit, signal } from '@angular/core';
+import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
+import { BluetoothConnectionService } from 'src/app/services/bluetooth-connection.service';
+import { BluetoothNotificationService } from 'src/app/services/bluetooth-notification.service';
 
 @Component({
   selector: 'app-pump-info-card',
@@ -22,10 +23,14 @@ export class PumpInfoCardComponent  implements OnInit, OnDestroy {
   currentMotorRuntime = 0
 
   constructor(
-    private bluetoothService: BluetoothService) {
-      this.connection = this.bluetoothService.connectionStatus;
-      this.id = this.bluetoothService.deviceIDSignal
-      this.currentPressure = this.bluetoothService.currentPressureSignal;
+    private bluetoothConnectionService: BluetoothConnectionService,
+    private bluetoothControlService: BluetoothControlsService,
+    private bluetoothNotificationService: BluetoothNotificationService
+
+  ) {
+      this.connection = this.bluetoothConnectionService.connectionStatus;
+      this.id = this.bluetoothConnectionService.deviceIDSignal
+      this.currentPressure = this.bluetoothNotificationService.currentPressureSignal;
 
     }
 
@@ -36,14 +41,14 @@ export class PumpInfoCardComponent  implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.connectionSub = this.bluetoothService.connectionData.subscribe(
+    this.connectionSub = this.bluetoothConnectionService.connectionData.subscribe(
       data => {
         this.connected = data
         // console.log("BLE CONNECTED PUMP INFO CARD!!!", this.connected)
       }
     )
 
-    this.bluetoothService.onReadMotorRuntime().then(
+    this.bluetoothControlService.onReadMotorRuntime(this.id()).then(
       data => {
         if (data) {
           this.currentMotorRuntime = data
