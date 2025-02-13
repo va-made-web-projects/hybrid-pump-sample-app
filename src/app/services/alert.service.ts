@@ -6,10 +6,17 @@ import { AlertController } from '@ionic/angular';
 })
 export class AlertService {
   isAlertShow = false
+  didShowError = false
 
   constructor(private alertController: AlertController) { }
 
   async presentAlert() {
+    if (this.didShowError) {
+      return
+    }
+    if (this.isAlertShow) {
+      return
+    }
     const alert = await this.alertController.create({
       header:"Problem with Pump",
       subHeader:"There is a problem with the pump",
@@ -17,11 +24,12 @@ export class AlertService {
       buttons: ['Ok'],
       backdropDismiss: true,
     });
-
     if (!this.isAlertShow) {
-      await alert.present();
       this.isAlertShow = true
+      this.didShowError = true
+      await alert.present();
     }
+
 
     alert.onDidDismiss().then(() => {
       this.isAlertShow = false

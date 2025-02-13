@@ -1,0 +1,17 @@
+<ion-card>
+  <ion-item-divider color="primary">
+    <ion-label>Reset Error Status</ion-label>
+    <app-info-button class="ion-no-padding"
+      popoverContent="Reset the error status on device">
+    </app-info-button>
+  </ion-item-divider>
+  <ion-card-content>
+    <ion-item>
+      <ion-label>Current Error Status</ion-label>
+      <ion-badge color="primary" mode="ios">{{ bluetoothControlService.errorStateSignal() }}</ion-badge>
+    </ion-item>
+    <ion-item>
+      <ion-button (click)="resetErrorStatus()" color="danger">Reset Error Status</ion-button>
+    </ion-item>
+  </ion-card-content>
+</ion-card>

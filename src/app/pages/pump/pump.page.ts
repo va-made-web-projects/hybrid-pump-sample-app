@@ -20,7 +20,6 @@ export class PumpPage implements OnInit, OnDestroy {
   readonly device = this.deviceSettingsService.state.asReadonly();
   alertSignal = signal(0);
   debug = signal(false);
-  errorState = 0;
   isConnecting = signal(false);
 
   connectionSub: Subscription = new Subscription;
@@ -37,6 +36,7 @@ export class PumpPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.alertSignal = this.bluetoothNotificationService.alertTypeSignal;
+
 
     // can get from preferences
     this.deviceSettingsService.setState({
@@ -56,30 +56,30 @@ export class PumpPage implements OnInit, OnDestroy {
         const deviceID = this.bluetoothConnectionService.deviceIDSignal()
         this.connected = data
         if (this.connected) {
+          this.checkErrorState(deviceID);
           console.log("connected")
           this.bluetoothControlService.updateDeviceState(deviceID, this.deviceSettingsService);
           this.updatePumpState();
               setInterval(() => {
                 this.updatePumpState();
+                this.checkErrorState(deviceID);
               }, 1000)
-
-
-              this.bluetoothControlService.onReadErrorState(deviceID).then(
-                errorState => {
-                  console.log("ERROR STATE", errorState)
-                    if (errorState) {
-                      this.deviceSettingsService.set("error", errorState);
-                      this.errorState = errorState
-                      if (errorState > 0) {
-                        this.alertService.presentAlert()
-                      }
-                    }
-                }
-              )
             }
         }
     )
+  }
 
+  checkErrorState(deviceID: string) {
+    this.bluetoothControlService.onReadErrorState(deviceID).then(
+      errorState => {
+        console.log("ERROR STATE", errorState)
+          if (errorState) {
+            this.deviceSettingsService.set("error", errorState);
+            this.bluetoothControlService.errorStateSignal.set(errorState);
+            this.alertService.presentAlert();
+          }
+      }
+    )
   }
 
   updatePumpState() {

@@ -108,7 +108,6 @@ export class BluetoothControlsService {
   }
 
   async onReadErrorState(deviceID: string) {
-    this.errorStateSignal.set(0)
     try {
       const readData = await BleClient.read(
         deviceID,
@@ -118,6 +117,7 @@ export class BluetoothControlsService {
 
       if (readData.byteLength > 0) {
         const parsedReading = ParseDataUtils.parseInt8DataReading(readData);
+        this.errorStateSignal.set(parsedReading)
         return parsedReading;
       } else {
         console.log('No data received from Bluetooth device.');
@@ -131,6 +131,25 @@ export class BluetoothControlsService {
       }
       // If there's an error, return null
       return null;
+    }
+  }
+
+
+  async onWriteErrorState(deviceID: string, state: number) {
+    try {
+      // Create ArrayBuffer with DataView
+      const buffer = new ArrayBuffer(1);
+      const dataView = new DataView(buffer);
+      dataView.setUint8(0, state);
+      await BleClient.writeWithoutResponse(
+        deviceID,
+        BLUETOOTH_UUID.deviceServiceUUID,
+        BLUETOOTH_UUID.errorStateCharUUID,
+        dataView
+      );
+      this.errorStateSignal.set(state)
+    } catch (error) {
+      console.log('Write BT Error State data error:', error);
     }
   }
 

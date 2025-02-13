@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="errorState > 0" class="ion-text-center">
+  <div *ngIf="bluetoothControlService.errorStateSignal() > 0" class="ion-text-center error-state">
     <app-errorstate></app-errorstate>
   </div>
   <ng-container>

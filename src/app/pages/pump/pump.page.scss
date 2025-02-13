@@ -2,3 +2,13 @@ ion-spinner {
   width: 100px;
   height: 100px;
 }
+
+.error-state {
+  animation: blink 1s infinite; /* 1-second duration, infinite loop */
+}
+
+@keyframes blink {
+  0% { opacity: 1; } /* Fully visible */
+  50% { opacity: 0; } /* Invisible */
+  100% { opacity: 1; } /* Fully visible again */
+}

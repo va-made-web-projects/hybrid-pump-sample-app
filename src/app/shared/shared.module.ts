@@ -6,6 +6,7 @@ import { InfoPopoverComponent } from './info-popover/info-popover.component';
 import { UserTypeComponent } from './user-type/user-type.component';
 import { FormsModule } from '@angular/forms';
 import { CodeModalComponent } from './code-modal/code-modal.component';
+import { ResetErrorStateComponent } from '../components/reset-error-state/reset-error-state.component';
 
 
 
@@ -19,12 +20,15 @@ import { CodeModalComponent } from './code-modal/code-modal.component';
     InfoButtonComponent,
     InfoPopoverComponent,
     UserTypeComponent,
-    CodeModalComponent],
+    CodeModalComponent,
+    ResetErrorStateComponent
+  ],
 	exports: [
     InfoButtonComponent,
     InfoPopoverComponent,
     UserTypeComponent,
-    CodeModalComponent
+    CodeModalComponent,
+    ResetErrorStateComponent
   ]
 })
 export class SharedModule { }
