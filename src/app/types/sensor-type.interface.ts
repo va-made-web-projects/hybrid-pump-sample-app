@@ -6,6 +6,7 @@ interface SensorData {
   batteryReading: number;
   lowThreshold: number;
   highThreshold: number;
+  errorState: number;
 }
 
 export default SensorData;

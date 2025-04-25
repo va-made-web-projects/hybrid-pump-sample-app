@@ -31,6 +31,8 @@ export class FlashDataUtils {
         // Read high threshold (bytes 15-16, little-endian)
         const highThreshold = data.getUint16(offset + 11, true);
 
+        const errorState = data.getUint16(offset + 13, true);
+
         parsedData.push({
             timestamp: Number(timestamp),
             sensorValue,
@@ -38,7 +40,8 @@ export class FlashDataUtils {
             pumpMode,
             batteryReading,
             lowThreshold,
-            highThreshold
+            highThreshold,
+            errorState
         });
     }
     return parsedData;

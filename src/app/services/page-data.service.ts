@@ -19,6 +19,7 @@ interface SensorData {
   batteryReading: number;
   lowThreshold: number;
   highThreshold: number;
+  errorState: number;
 }
 
 @Injectable({
