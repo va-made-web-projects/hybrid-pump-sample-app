@@ -22,12 +22,25 @@ export class MainSettingsComponent  implements OnInit {
 
   ngOnInit() {
     this.loadDarkMode();
+    this.loadNotifications();
     // Use matchMedia to check the user preference
   }
 
   async loadDarkMode() {
     this.darkMode = (await Preferences.get({ key: 'darkMode' })).value === 'true';
+  }
+  async loadNotifications() {
+    this.checkNotificationPreferences()
+  }
 
+  async checkNotificationPreferences() {
+    const storedNotificationsPreference = await Preferences.get({ key: 'notificationsActive' });
+    if (storedNotificationsPreference && storedNotificationsPreference.value !== null) { // Use stored preference if available
+      this.notifications = storedNotificationsPreference.value === 'true'
+    } else {
+      this.notifications = false;
+      await Preferences.set({key:'notificationsActive', value:'false' });
+    }
   }
 
     // Listen for the toggle check/uncheck to toggle the dark palette
@@ -35,10 +48,15 @@ export class MainSettingsComponent  implements OnInit {
     this.darkModeService.toggleDarkPalette(event.detail.checked);
   }
 
+  async setNotif(value: boolean) {
+    await Preferences.set({key:'notificationsActive', value: value.toString() });
+    this.notifications = value;
+  }
 
-
-  toggleNotifications() {
-    this.notifications = !this.notifications;
+  toggleNotifications(event: CustomEvent) {
+    // check permissions for notifs
+    this.setNotif(event.detail.checked)
+    console.log(`Set Notifs to ${this.notifications}`)
   }
 
   toggleSoundEffects() {

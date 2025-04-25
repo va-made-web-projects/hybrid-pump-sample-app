@@ -5,6 +5,7 @@ import { Subscription, take } from 'rxjs';
 import { AlertService } from 'src/app/services/alert.service';
 import { BluetoothControlsService } from 'src/app/services/bluetooth-controls.service';
 import { BluetoothNotificationService } from 'src/app/services/bluetooth-notification.service';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 @Component({
   selector: 'app-pump',
@@ -37,6 +38,7 @@ export class PumpPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.alertSignal = this.bluetoothNotificationService.alertTypeSignal;
 
+    LocalNotifications.requestPermissions();
 
     // can get from preferences
     this.deviceSettingsService.setState({
